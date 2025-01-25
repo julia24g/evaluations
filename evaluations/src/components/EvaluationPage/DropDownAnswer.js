@@ -9,16 +9,17 @@ const DropDownAnswer = () => {
 
   return (
     <div className="dropdown-answer">
-      <label htmlFor={`dropdown`}>Select an answer:</label>
       <select
         id={`dropdown-`}
         value={selectedAnswer}
         onChange={handleChange}
       >
-        <option value="">-- Select --</option>
-        <option value="Option 1">Option 1</option>
-        <option value="Option 2">Option 2</option>
-        <option value="Option 3">Option 3</option>
+        <option value="">Not Observed</option>
+        <option value="Option 1">Not Applicable</option>
+        <option value="Option 2">Never</option>
+        <option value="Option 3">Occasionally</option>
+        <option value="Option 3">Frequently</option>
+        <option value="Option 3">Always</option>
       </select>
     </div>
   );

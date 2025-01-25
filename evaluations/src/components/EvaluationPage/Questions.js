@@ -1,34 +1,23 @@
 import React from 'react';
 import SingleQuestion from './SingleQuestion';
+import questionData from '../../staticdata/questionData';
 
-const Questions = ({category, level, role}) => {
-  const questionData = [ // all questions should live here
-    {
-      id: 1,
-      category: "A",
-      text: "What are the key challenges in your role?",
-      relatedPEOCapabilities: "Problem Solving, Communication",
-      relatedPEOBehaviours: "Adaptability, Leadership"
-    },
-    {
-      id: 2,
-      category: "B",
-      text: "How do you prioritize tasks?",
-      relatedPEOCapabilities: "Time Management",
-      relatedPEOBehaviours: "Decision Making"
-    }
-  ];
-
+const Questions = ({role, categoryName}) => {
   return (
     <div className="questions">
-      {questionData.map((question) => (
+      <form>
+      {questionData
+      .filter((question) => question.role === role && question.category === categoryName)
+      .map((question) => (
         <SingleQuestion
-          key={question.id}
-          text={question.text}
+          key={question.key}
+          text={question.question}
+          level={question.level}
           relatedPEOCapabilities={question.relatedPEOCapabilities}
           relatedPEOBehaviours={question.relatedPEOBehaviours}
         />
       ))}
+      </form>
     </div>
   );
 };

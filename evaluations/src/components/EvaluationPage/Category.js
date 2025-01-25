@@ -1,16 +1,11 @@
 import React from 'react';
 import Questions from './Questions';
 
-const Category = ({ categoryName, roles, level }) => {
+const Category = ({ categoryName, role }) => {
   return (
-    <div className="category-tab">
+    <div className="category">
       <h2>{categoryName}</h2>
-      {roles.map(role => (
-        <div key={role}>
-          <h3>{role}</h3>
-          <Questions role={role} level={level} categoryName={categoryName} />
-        </div>
-      ))}
+      <Questions role={role} categoryName={categoryName} />
     </div>
   );
 };

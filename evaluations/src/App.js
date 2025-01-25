@@ -1,10 +1,12 @@
 import './App.css';
-import EmployeeDirectory from './components/EmployeeDirectoryPage/EmployeeDirectory';
+import Evaluation from './components/EvaluationPage/Evaluation';
+import Results from './components/EvaluationPage/Results';
 
 function App() {
   return (
     <div className="app">
-      <EmployeeDirectory/>
+      <Evaluation role="Software Engineer" />
+      <Results role="Software Engineer" />
     </div>
   );
 }

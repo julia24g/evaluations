@@ -2,14 +2,18 @@ import React from 'react';
 import DropDownAnswer from './DropDownAnswer';
 import Comments from './Comments';
 
-const SingleQuestion = ({ text, relatedPEOCapabilities, relatedPEOBehaviours }) => {
+const SingleQuestion = ({ text, level, relatedPEOCapabilities, relatedPEOBehaviours }) => {
   return (
     <div className="single-question">
-      <p>{text}</p>
-      <p>{relatedPEOCapabilities}</p>
-      <p>{relatedPEOBehaviours}</p>
+      <div className="mb-3">
+      <label className="form-label">{text}</label>
       <DropDownAnswer/>
-      <Comments/>
+    </div>
+    <p>{level}</p>
+    <p>{relatedPEOCapabilities}</p>
+    <p>{relatedPEOBehaviours}</p>
+    <button>See Comments</button>
+    <Comments/>
     </div>
   );
 };
