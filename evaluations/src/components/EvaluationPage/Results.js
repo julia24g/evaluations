@@ -12,8 +12,6 @@ const Results = ({role}) => {
         )
       ).map((category, index) => ({ key: index, name: category }));
 
-    console.log(categories);
-
   return (
     <div className="results">
         <table className="table">
