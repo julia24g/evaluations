@@ -135,7 +135,7 @@ const questionData = [
         "key": 14
     },
     {
-        "category": "",
+        "category": "Architecture & Design",
         "level": "Consulting",
         "question": "Do they provide technical leadership and guidance to engineering teams tasked with particularly demanding technical requirements?",
         "relatedPEOCapabilities": "",
@@ -144,7 +144,7 @@ const questionData = [
         "key": 15
     },
     {
-        "category": "",
+        "category": "Architecture & Design",
         "level": "Consulting",
         "question": "Do they provide guidance and initial design for key system components for architecturally strategic projects? ",
         "relatedPEOCapabilities": "",
@@ -153,7 +153,7 @@ const questionData = [
         "key": 16
     },
     {
-        "category": "",
+        "category": "Architecture & Design",
         "level": "Consulting",
         "question": "Do they ensure, thorough, well-researched architectural recommendations, are provided for major projects?",
         "relatedPEOCapabilities": "",
@@ -162,7 +162,7 @@ const questionData = [
         "key": 17
     },
     {
-        "category": "",
+        "category": "Architecture & Design",
         "level": "Consulting",
         "question": "Do they have a proven track record of designing solutions and reusable frameworks that form the foundation for future production systems? ",
         "relatedPEOCapabilities": "",
@@ -279,7 +279,7 @@ const questionData = [
         "key": 30
     },
     {
-        "category": "",
+        "category": "Coding",
         "level": "Consulting",
         "question": "Does their code provide a foundation for future production systems?",
         "relatedPEOCapabilities": "",
@@ -288,7 +288,7 @@ const questionData = [
         "key": 31
     },
     {
-        "category": "",
+        "category": "Coding",
         "level": "Consulting",
         "question": "Do they code in a way that supports complex interoperability requirements? ",
         "relatedPEOCapabilities": "",
@@ -927,7 +927,7 @@ const questionData = [
         "key": 102
     },
     {
-        "category": "",
+        "category": "Collaboration",
         "level": "Consulting",
         "question": "Do they lead by example in demonstrating best-in-class behaviors across different levels of the organization?",
         "relatedPEOCapabilities": "",
@@ -1188,7 +1188,7 @@ const questionData = [
         "key": 131
     },
     {
-        "category": "",
+        "category": "Innovation",
         "level": "Consulting",
         "question": "Do they anticipate future technical trends through thorough research and make organisational level recommendations accordingly?",
         "relatedPEOCapabilities": "",
@@ -1197,7 +1197,7 @@ const questionData = [
         "key": 132
     },
     {
-        "category": "",
+        "category": "Innovation",
         "level": "Consulting",
         "question": "Do they take calculated risks, and challenge the status quo to drive innovation in solving existing complex technical problems?",
         "relatedPEOCapabilities": "",

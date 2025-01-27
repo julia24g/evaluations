@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const DropDownAnswer = () => {
+const DropDownAnswer = ({ key }) => {
   const [selectedAnswer, setSelectedAnswer] = useState("");
 
   const handleChange = (event) => {
@@ -13,6 +13,7 @@ const DropDownAnswer = () => {
         id={`dropdown-`}
         value={selectedAnswer}
         onChange={handleChange}
+        className="form-select"
       >
         <option value="">Not Observed</option>
         <option value="Option 1">Not Applicable</option>

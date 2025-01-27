@@ -6,7 +6,6 @@ function App() {
   return (
     <div className="app">
       <Evaluation role="Software Engineer" />
-      <Results role="Software Engineer" />
     </div>
   );
 }
