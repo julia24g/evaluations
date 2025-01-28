@@ -11,6 +11,7 @@ const Questions = ({role, categoryName}) => {
       .map((question) => (
         <SingleQuestion
           key={question.key}
+          questionKey={question.key}
           text={question.question}
           level={question.level}
           relatedPEOCapabilities={question.relatedPEOCapabilities}

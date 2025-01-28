@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DropDownAnswer from './DropDownAnswer';
 import Comments from './Comments';
 
-const SingleQuestion = ({ key, text, level, relatedPEOCapabilities, relatedPEOBehaviours }) => {
+const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, relatedPEOBehaviours }) => {
 
   const [commentActive, setCommentActive] = useState(false);
 
@@ -15,26 +15,26 @@ const SingleQuestion = ({ key, text, level, relatedPEOCapabilities, relatedPEOBe
       <div className="row">
         <div className="col-9 mb-3">
           <label className="form-label">{text}</label>
-          <span class="badge rounded-pill text-bg-primary">{level}</span>
+          <span className="badge rounded-pill text-bg-primary">{level}</span>
           {relatedPEOCapabilities.length > 0 && <p>Related PEO Capabilities: {relatedPEOCapabilities}</p>}
           {relatedPEOBehaviours.length > 0 && <p>Related PEO Behaviours: {relatedPEOBehaviours}</p>}
 
         </div>
         <div className="col-2">
-          <DropDownAnswer/>
+          <DropDownAnswer questionKey={questionKey}/>
         </div>
         <div className="col-1">
           <button 
               type="button" 
-              class="btn btn-secondary"
+              className="btn btn-secondary"
               onClick={handleCommentClick}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text-fill" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-text-fill" viewBox="0 0 16 16">
                   <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"></path>
                 </svg>
           </button>
         </div>
       </div>
-    {commentActive && <Comments questionKey={key}/>}
+    {commentActive && <Comments questionKey={questionKey}/>}
     </div>
   );
 };

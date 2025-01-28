@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeAnswer } from '../../slices/answersSlice';
 
-const DropDownAnswer = ({ key }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState("");
+const DropDownAnswer = ({ questionKey }) => {
+  const dispatch = useDispatch();
+  const answers = useSelector((state) => state.answers.answers);
 
-  const handleChange = (event) => {
-    setSelectedAnswer(event.target.value);
+  const handleAnswerChange = (questionKey, event) => {
+    const newAnswer = event.target.value;
+    dispatch(changeAnswer({ questionKey: questionKey, answer: newAnswer }));
   };
 
   return (
     <div className="dropdown-answer">
       <select
         id={`dropdown-`}
-        value={selectedAnswer}
-        onChange={handleChange}
+        value={answers[questionKey] || "notObserved"}
+        onChange={(e) => handleAnswerChange(questionKey, e)}
         className="form-select"
       >
-        <option value="">Not Observed</option>
-        <option value="Option 1">Not Applicable</option>
-        <option value="Option 2">Never</option>
-        <option value="Option 3">Occasionally</option>
-        <option value="Option 3">Frequently</option>
-        <option value="Option 3">Always</option>
+        <option value="notObserved">Not Observed</option>
+        <option value="notApplicable">Not Applicable</option>
+        <option value="never">Never</option>
+        <option value="occasionally">Occasionally</option>
+        <option value="frequently">Frequently</option>
+        <option value="always">Always</option>
       </select>
     </div>
   );
