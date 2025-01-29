@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import Category from './Category';
 import questionData from '../../staticdata/questionData';
+import Results from './Results';
 
 const Evaluation = ({role}) => {
 
-  const categories = Array.from(
+  let categories = Array.from(
     new Set(
       questionData
         .filter((question) => question.role === role)
         .map((question) => question.category)
     )
   ).map((category, index) => ({ key: index, name: category }));
+
+  const resultsCategory = { key: categories.length, name: "Results" };
+  categories = [...categories, resultsCategory];
 
   const [activeTab, setActiveTab] = useState(categories[0].name);
 
@@ -42,7 +46,8 @@ const Evaluation = ({role}) => {
         </nav>
       {/* Content */}
       <div className="flex-grow-1 p-3">
-        <Category categoryName={activeTab} role={role} />
+        {activeTab === "Results" && <Results role={role} />}
+        {activeTab !== "Results" && <Category categoryName={activeTab} role={role} />}
       </div>
     </div>
   );
