@@ -16,6 +16,8 @@ const Questions = ({role, categoryName}) => {
           level={question.level}
           relatedPEOCapabilities={question.relatedPEOCapabilities}
           relatedPEOBehaviours={question.relatedPEOBehaviours}
+          category={categoryName}
+          role={role}
         />
       ))}
       </form>

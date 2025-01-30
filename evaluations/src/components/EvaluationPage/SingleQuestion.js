@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DropDownAnswer from './DropDownAnswer';
 import Comments from './Comments';
 
-const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, relatedPEOBehaviours }) => {
+const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, relatedPEOBehaviours, category, role }) => {
 
   const [commentActive, setCommentActive] = useState(false);
 
@@ -21,7 +21,7 @@ const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, rela
 
         </div>
         <div className="col-2">
-          <DropDownAnswer questionKey={questionKey}/>
+          <DropDownAnswer role={role} category={category} level={level} questionKey={questionKey}/>
         </div>
         <div className="col-1">
           <button 

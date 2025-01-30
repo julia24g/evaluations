@@ -2,6 +2,8 @@ import React from 'react';
 import questionData from '../../staticdata/questionData';
 import ResultRow from './ResultRow';
 
+// TODO: calculate the actual results and display in table, and potentially store in redux
+
 const Results = ({role}) => {
 
     const categories = Array.from(
