@@ -34,10 +34,7 @@ const answerSlice = createSlice({
     changeAnswer: (state, action) => { 
       const { role, category, level, questionKey, answer } = action.payload;
       if (
-        state.answers[role] &&
-        state.answers[role][category] &&
-        state.answers[role][category][level] &&
-        state.answers[role][category][level][questionKey]
+        state.answers?.[role]?.[category]?.[level]?.[questionKey]
       ) {
         state.answers[role][category][level][questionKey].answer = answer;
       } else {

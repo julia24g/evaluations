@@ -2,17 +2,16 @@ import React from 'react';
 import questionData from '../../staticdata/questionData';
 import ResultRow from './ResultRow';
 
-// TODO: calculate the actual results and display in table, and potentially store in redux
 
 const Results = ({role}) => {
 
-    const categories = Array.from(
-        new Set(
-          questionData
-            .filter((question) => question.role === role)
-            .map((question) => question.category)
-        )
-      ).map((category, index) => ({ key: index, name: category }));
+  const categories = Array.from(
+      new Set(
+        questionData
+          .filter((question) => question.role === role)
+          .map((question) => question.category)
+      )
+    ).map((category, index) => ({ key: index, name: category }));
 
   return (
     <div className="results">
@@ -28,7 +27,7 @@ const Results = ({role}) => {
         </thead>
         <tbody>
             {categories
-            .map((c) => <ResultRow key={c.key} category={c.name}/>)}
+            .map((c) => <ResultRow key={c.key} category={c.name} role={role}/>)}
         </tbody>
         </table>
 
