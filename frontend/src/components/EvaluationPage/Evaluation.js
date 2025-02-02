@@ -1,9 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Category from './Category';
 import questionData from '../../staticdata/questionData';
 import Results from './Results';
+import { useUser } from '../../context/UserContext';
+import axios from 'axios';
 
-const Evaluation = ({role}) => {
+// load questions once at top level of app
+
+const Evaluation = ({}) => {
+  const { state, dispatch } = useUser();
+  const [assessmentData, setAssessmentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (state.userId && state.assessmentId) {
+      setLoading(true);
+      axios
+        .get(`/api/assessments/${assessmentId}`) // Make request to API
+        .then((response) => {
+          setAssessmentData(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching assessment data:", error);
+          setError(error.response?.data?.message || "An error occurred");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [state.assessmentId, dispatch]);
+
 
   let categories = Array.from(
     new Set(

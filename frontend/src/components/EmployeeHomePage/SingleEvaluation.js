@@ -1,12 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
-const SingleEvaluation = ({ status, date, deadline }) => {
+const SingleEvaluation = ({ assessmentId, status, date }) => {
+  
+  const navigate = useNavigate();
+  const { dispatch } = useUser();
+
+  const openAssessment = () => {
+    dispatch({ type: "SET_ASSESSMENT", payload: assessmentId});
+    navigate(`/assessment/${assessmentId}`);
+  }
+
   return (
     <div className="single-evaluation">
-      <button className="evaluation-button">
+      <button onClick={openAssessment} className="evaluation-button">
         <div>Status: {status}</div>
-        <div>Date: {date}</div>
-        <div>Deadline: {deadline}</div>
+        <div>Date: {new Date(date).toLocaleDateString()}</div>
       </button>
     </div>
   );
