@@ -10,12 +10,17 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT fk_manager FOREIGN KEY (managerId) REFERENCES users(userId) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS answer_options (
+    answerId SERIAL PRIMARY KEY,
+    answerText VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS assessment (
     assessmentId SERIAL PRIMARY KEY,
     userId INT NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    answers TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT 'In Progress',
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    assessmentAnswers JSONB NULL,
     CONSTRAINT fk_assessment_user FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
