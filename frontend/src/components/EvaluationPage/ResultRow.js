@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import answerMapping from '../../staticdata/answerMapping';
 
 const ResultRow = ({ category, role }) => {
 
@@ -15,12 +14,12 @@ const ResultRow = ({ category, role }) => {
         let numLevelQs = 0;
         let levelTotal = 0;
 
-        Object.values(questions).forEach((q) => {
-            if (q.answer in answerMapping) {
-                numLevelQs += 1;
-                levelTotal += answerMapping[q.answer];
-            }
-        });
+        // Object.values(questions).forEach((q) => {
+        //     if (q.answer in answerMapping) {
+        //         numLevelQs += 1;
+        //         levelTotal += answerMapping[q.answer];
+        //     }
+        // });
 
         scores[level] = numLevelQs > 0 ? levelTotal / numLevelQs : 0;
         numCategoryQs += numLevelQs;

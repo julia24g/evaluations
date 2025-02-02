@@ -6,9 +6,12 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255),
     firstName VARCHAR(100),
     lastName VARCHAR(100),
-    managerId INT, 
+    managerId INT NULL,
+    individualContributor BOOLEAN NOT NULL DEFAULT TRUE, 
+    role VARCHAR(20) CHECK (role IN ('Software Engineer', 'Test Engineer')),
     CONSTRAINT fk_manager FOREIGN KEY (managerId) REFERENCES users(userId) ON DELETE SET NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS answer_options (
     answerId SERIAL PRIMARY KEY,
