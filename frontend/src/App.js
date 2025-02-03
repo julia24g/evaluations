@@ -2,10 +2,10 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 
-import Evaluation from './components/EvaluationPage/Evaluation';
+import Assessment from './components/AssessmentPage/Assessment';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import EmployeeDirectory from './components/EmployeeDirectoryPage/EmployeeDirectory';
+import Home from './components/Home';
 
 
 function App() {
@@ -15,9 +15,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          {/* <Route path="/dashboard" element={<Home />} /> */}
-          <Route path="/assessment/:assessmentId" element={<Evaluation />} />
-          <Route path="/directory/" element={<EmployeeDirectory />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/assessment/:assessmentId" element={<Assessment />} />
+          {/* <Route path="/directory/" element={<EmployeeDirectory />} /> */}
         </Routes>
       </Router>
     </UserProvider>

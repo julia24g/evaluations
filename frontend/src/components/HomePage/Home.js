@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import SingleEvaluation from './SingleEvaluation';
+import SingleEvaluation from './SingleAssessment';
 
 const EmployeeHome = () => {
   const { state, dispatch } = useUser();
@@ -20,7 +20,7 @@ const EmployeeHome = () => {
           setAssessments(response.data);
         })
         .catch((error) => {
-          console.error("Error fetching evaluations:", error);
+          console.error("Error fetching assessments:", error);
           setError(error.response?.data?.message || "An error occurred");
         })
         .finally(() => {
@@ -28,6 +28,41 @@ const EmployeeHome = () => {
         });
     }
   }, [state.userId]);
+
+  useEffect(() => {
+    if (state.role) {
+      axios
+        .get(`/api/questions`, { params: { role: state.role } })
+        .then((response) => {
+          const questions = response.data;
+          
+          // Store questions as an array
+          dispatch({ type: "SET_QUESTIONS_ARRAY", payload: questions });
+
+          // Get unique categories from questions
+          const categories = Array.from(
+            new Set(
+              questions
+                .map((question) => question.category)
+            )
+          ).map((category, index) => ({ key: index, name: category }));
+
+          dispatch({ type: "SET_CATEGORIES", payload: categories || [] })
+
+          // Turn questions into a dictionary
+          const questionsDictionary = questionsArray.reduce((acc, question) => {
+            acc[question.questionId] = question;
+            return acc;
+          }, {});
+          dispatch({ type: "SET_QUESTIONS_MAPPING", payload: questionsDictionary });
+
+        })
+        .catch((error) => {
+          console.error("Error fetching evaluations:", error);
+          setError(error.response?.data?.message || "An error occurred");
+        })
+    }
+  }, [state.role]);
 
   const createAndOpenAssessment = () => {
     if (state.userId) {

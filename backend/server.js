@@ -27,4 +27,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = pool;
-

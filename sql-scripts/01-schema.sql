@@ -12,12 +12,6 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT fk_manager FOREIGN KEY (managerId) REFERENCES users(userId) ON DELETE SET NULL
 );
 
-
-CREATE TABLE IF NOT EXISTS answer_options (
-    answerId SERIAL PRIMARY KEY,
-    answerText VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS assessment (
     assessmentId SERIAL PRIMARY KEY,
     userId INT NOT NULL,

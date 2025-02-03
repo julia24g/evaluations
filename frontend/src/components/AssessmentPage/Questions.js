@@ -1,23 +1,25 @@
 import React from 'react';
 import SingleQuestion from './SingleQuestion';
-import questionData from '../../staticdata/questionData';
+import { useUser } from '../../context/UserContext';
 
-const Questions = ({role, categoryName}) => {
+const Questions = ({ categoryName }) => {
+  const { state } = useUser();
+  const questionsArray = state.questionsArray;
+
   return (
     <div className="questions">
       <form>
-      {questionData
-      .filter((question) => question.role === role && question.category === categoryName)
+      {questionsArray
+      .filter((question) => question.category === categoryName)
       .map((question) => (
         <SingleQuestion
-          key={question.key}
-          questionKey={question.key}
-          text={question.question}
+          key={question.questionId}
+          questionKey={question.questionId}
+          text={question.questionText}
           level={question.level}
           relatedPEOCapabilities={question.relatedPEOCapabilities}
           relatedPEOBehaviours={question.relatedPEOBehaviours}
           category={categoryName}
-          role={role}
         />
       ))}
       </form>

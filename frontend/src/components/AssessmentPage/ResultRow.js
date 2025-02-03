@@ -1,25 +1,30 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useUser } from '../../context/UserContext';
 
-const ResultRow = ({ category, role }) => {
+const ResultRow = ({ category }) => {
+
+    // get questions per category per role per level?
+
+    const { state } = useUser();
 
     const answers = useSelector((state) => state.answers.answers);
 
-    if (!answers?.[role]?.[category]) return null;
+    if (!answers?.[category]) return null;
     const scores = {};
     let numCategoryQs = 0;
     let categoryTotal = 0;
 
-    Object.entries(answers[role][category]).forEach(([level, questions]) => {
+    Object.entries(answers[category]).forEach(([level, questions]) => {
         let numLevelQs = 0;
         let levelTotal = 0;
 
-        // Object.values(questions).forEach((q) => {
-        //     if (q.answer in answerMapping) {
-        //         numLevelQs += 1;
-        //         levelTotal += answerMapping[q.answer];
-        //     }
-        // });
+        Object.values(questions).forEach((q) => {
+            if (q.answer in answerMapping) {
+                numLevelQs += 1;
+                levelTotal += answerMapping[q.answer];
+            }
+        });
 
         scores[level] = numLevelQs > 0 ? levelTotal / numLevelQs : 0;
         numCategoryQs += numLevelQs;

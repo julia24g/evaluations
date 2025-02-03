@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Category from './Category';
-import questionData from '../../staticdata/questionData';
 import Results from './Results';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 
-// load questions once at top level of app
-
 const Evaluation = ({}) => {
   const { state, dispatch } = useUser();
-  const [assessmentData, setAssessmentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const categories = state.categories
 
   useEffect(() => {
     if (state.userId && state.assessmentId) {
       setLoading(true);
       axios
-        .get(`/api/assessments/${assessmentId}`) // Make request to API
+        .get(`/api/assessments/${assessmentId}`)
         .then((response) => {
-          setAssessmentData(response.data);
+          dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} })
         })
         .catch((error) => {
           console.error("Error fetching assessment data:", error);
@@ -31,21 +29,11 @@ const Evaluation = ({}) => {
     }
   }, [state.assessmentId, dispatch]);
 
-
-  let categories = Array.from(
-    new Set(
-      questionData
-        .filter((question) => question.role === role)
-        .map((question) => question.category)
-    )
-  ).map((category, index) => ({ key: index, name: category }));
-
   const resultsCategory = { key: categories.length, name: "Results" };
-  categories = [...categories, resultsCategory];
+  const allCategories = [...categories, resultsCategory];
 
   const [activeTab, setActiveTab] = useState(categories[0].name);
 
-  // Handler to update the active tab when clicked
   const handleTabClick = (categoryName) => {
     setActiveTab(categoryName);
   };
@@ -57,7 +45,7 @@ const Evaluation = ({}) => {
             <span className="navbar-brand mb-0 h1">Navbar</span>
             <hr></hr>
             <ul className="nav nav-pills flex-column mb-auto">
-            {categories
+            {allCategories
             .map((category) => (
               <li className="nav-item" key={category.key}>
                   <button
@@ -71,10 +59,9 @@ const Evaluation = ({}) => {
             </ul>
           </div>
         </nav>
-      {/* Content */}
       <div className="flex-grow-1 p-3">
-        {activeTab === "Results" && <Results role={role} />}
-        {activeTab !== "Results" && <Category categoryName={activeTab} role={role} />}
+        {activeTab === "Results" && <Results />}
+        {activeTab !== "Results" && <Category categoryName={activeTab} />}
       </div>
     </div>
   );

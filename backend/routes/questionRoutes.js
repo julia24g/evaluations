@@ -3,10 +3,10 @@ const pool = require('../db');
 const router = express.Router();
 
 // Get questions by role
-router.get('/filter', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const { role } = req.query;
-        let query = 'SELECT * FROM question WHERE 1=1';
+        let query = 'SELECT questionId, level, category, relatedPEOCapabilities, relatedPEOBehaviours, questionText FROM question WHERE 1=1';
         let params = [];
 
         if (role) {

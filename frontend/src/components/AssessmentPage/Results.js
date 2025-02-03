@@ -1,17 +1,21 @@
 import React from 'react';
-import questionData from '../../staticdata/questionData';
 import ResultRow from './ResultRow';
+import { useUser } from '../../context/UserContext';
 
+const Results = () => {
+  const { state } = useUser();
+  const questionsMapping = state.questionsMapping;
+  const answers = state.answers;
+  const categories = state.categories;
 
-const Results = ({role}) => {
+  Object.entries(answers).forEach(([key, value]) => {
 
-  const categories = Array.from(
-      new Set(
-        questionData
-          .filter((question) => question.role === role)
-          .map((question) => question.category)
-      )
-    ).map((category, index) => ({ key: index, name: category }));
+    const category = questionsMapping[key].category;
+    const level = questionsMapping[key].level;
+
+  });
+    
+  // add to the respective score array
 
   return (
     <div className="results">
@@ -27,7 +31,7 @@ const Results = ({role}) => {
         </thead>
         <tbody>
             {categories
-            .map((c) => <ResultRow key={c.key} category={c.name} role={role}/>)}
+            .map((c) => <ResultRow key={c.key} category={c.name}/>)}
         </tbody>
         </table>
 
