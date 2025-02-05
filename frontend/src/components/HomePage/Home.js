@@ -26,6 +26,7 @@ const EmployeeHome = () => {
         .finally(() => {
           setLoading(false);
         });
+      setLoading(false);
     }
   }, [state.userId]);
 
@@ -50,7 +51,7 @@ const EmployeeHome = () => {
           dispatch({ type: "SET_CATEGORIES", payload: categories || [] })
 
           // Turn questions into a dictionary
-          const questionsDictionary = questionsArray.reduce((acc, question) => {
+          const questionsDictionary = questions.reduce((acc, question) => {
             acc[question.questionId] = question;
             return acc;
           }, {});

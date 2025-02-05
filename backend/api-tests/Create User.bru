@@ -1,0 +1,19 @@
+meta {
+  name: Create User
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{host}}/api/users/signup
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {"email":"newuser@example.com","password":"securepassword","firstName":"Alice","lastName":"Johnson"}
+}

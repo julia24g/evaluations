@@ -7,15 +7,17 @@ const Results = () => {
   const questionsMapping = state.questionsMapping;
   const answers = state.answers;
   const categories = state.categories;
+  const resultStore = {}
 
   Object.entries(answers).forEach(([key, value]) => {
 
     const category = questionsMapping[key].category;
     const level = questionsMapping[key].level;
 
+    // every category has X levels
+    // resultStore[category][level].total += value;
+
   });
-    
-  // add to the respective score array
 
   return (
     <div className="results">

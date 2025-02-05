@@ -3,15 +3,15 @@ const pool = require('../db'); // Import the database connection
 const router = express.Router();
 
 // Get all answers for a given assessment
-router.get('/:id', async (req, res) => {
+router.get('/:id/answers', async (req, res) => {
     try {
-        const { assessmentID } = req.params;
-        if (!assessmentID || isNaN(assessmentID)) {
+        const { id } = req.params;
+        if (!id || isNaN(id)) {
             return res.status(400).json({ message: "Invalid or missing assessmentID" });
         }
 
         const query = 'SELECT assessmentAnswers FROM assessment WHERE assessmentId = $1';
-        const result = await pool.query(query, [assessmentID]);
+        const result = await pool.query(query, [id]);
         res.status(200).json(result.rows);
     } catch (err) {
         console.error(err.message);

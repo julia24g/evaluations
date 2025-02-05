@@ -1,21 +1,41 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from '../context/UserContext';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { dispatch } = useUser();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    if (email === "manager@example.com" && password === "password") {
-      localStorage.setItem("user", JSON.stringify({ email, individualContributor: false }));
-      navigate("/dashboard");
-    } else {
-      alert("Invalid credentials! Try again.");
+  const handleLogin = async () => {
+    try {
+      if (email === "111@111.com" && password === "111") {
+        // Simulate an API call response
+        const response = {
+          data: {
+            userId: 1,  // Example userId
+            role: "Software Engineer",  // Example role
+            assessmentAnswers: {} // Empty object if no answers exist
+          }
+        };
+  
+        // Dispatch actions to set user data in context
+        dispatch({ type: "SET_USER", payload: response.data.userId });
+        dispatch({ type: "SET_ROLE", payload: response.data.role });
+        dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} });
+  
+        // Navigate to the dashboard
+        navigate("/");
+      } else {
+        alert("Invalid credentials! Try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login.");
     }
   };
+  
 
   return (
     <div className="login-container">

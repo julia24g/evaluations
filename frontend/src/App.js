@@ -5,7 +5,7 @@ import { UserProvider } from "./context/UserContext";
 import Assessment from './components/AssessmentPage/Assessment';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Home from './components/Home';
+import Home from './components/HomePage/Home';
 
 
 function App() {
