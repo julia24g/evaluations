@@ -30,6 +30,7 @@ const DropDownAnswer = ({ questionKey }) => {
       type: "UPDATE_ANSWERS",
       payload: { [questionKey]: selectedScore },
     });
+    console.log(state.answers)
   };
 
   return (

@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// ✅ Update an assessment
+// Update an assessment
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -54,7 +54,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// ✅ Delete an assessment
+// Delete an assessment
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

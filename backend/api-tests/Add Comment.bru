@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{host}}/api/comments/13/2
+  url: {{host}}/api/comments/13/1
   body: json
   auth: none
 }
@@ -15,5 +15,5 @@ headers {
 }
 
 body:json {
-  {"userId":1,"commentText":"This is a test comment."}
+  {"userId":2,"commentText":"This is a test comment from userId 2."}
 }

@@ -32,6 +32,13 @@ const Assessment = ({}) => {
   }, [state.assessmentId, dispatch]);
 
   const handleBackButtonClick = () => {
+    // save answers to DB and local storage
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/assessments/${state.assessmentId}`, {assessmentAnswers: state.answers})
+      .catch((error) => {
+        console.error("Error updating assessment answers:", error);
+        setError(error.response?.data?.message || "An error occurred");
+      })
     navigate(`/`);
   }
 
