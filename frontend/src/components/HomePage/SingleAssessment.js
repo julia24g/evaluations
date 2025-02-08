@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 
-const SingleEvaluation = ({ assessmentId, status, date }) => {
+const SingleAssessment = ({ assessmentId, status, date, onDelete }) => {
   
   const navigate = useNavigate();
   const { dispatch } = useUser();
@@ -13,13 +13,15 @@ const SingleEvaluation = ({ assessmentId, status, date }) => {
   }
 
   return (
-    <div className="single-evaluation">
-      <button onClick={openAssessment} className="evaluation-button">
+    <div className="card single-assessment">
+      <div className="card-body">
         <div>Status: {status}</div>
         <div>Date: {new Date(date).toLocaleDateString()}</div>
-      </button>
+        <button onClick={openAssessment} className="assessment-button">Open</button>
+        <button onClick={() => onDelete(assessmentId)} className="assessment-button">Delete</button>
+      </div>
     </div>
   );
 };
 
-export default SingleEvaluation;
+export default SingleAssessment;

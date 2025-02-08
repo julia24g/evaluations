@@ -3,7 +3,7 @@ const pool = require('../db'); // Import the database connection
 const router = express.Router();
 
 // Get all answers for a given assessment
-router.get('/:id/answers', async (req, res) => {
+router.get('/form/:id', async (req, res) => {
     try {
         const { id } = req.params;
         if (!id || isNaN(id)) {

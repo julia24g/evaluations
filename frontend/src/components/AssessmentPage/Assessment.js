@@ -15,7 +15,7 @@ const Evaluation = ({}) => {
     if (state.userId && state.assessmentId) {
       setLoading(true);
       axios
-        .get(`/api/assessments/${state.assessmentId}`)
+        .get(`${process.env.REACT_APP_API_URL}/api/assessments/form/${state.assessmentId}`)
         .then((response) => {
           dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} })
         })

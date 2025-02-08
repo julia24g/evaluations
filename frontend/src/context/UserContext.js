@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext } from "react";
+import React, { createContext, useReducer, useContext, useEffect } from "react";
 
 const initialState = {
   userId: null,
@@ -10,39 +10,97 @@ const initialState = {
   categories: []
 };
 
+const safeParse = (key, fallback) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item && item !== "undefined" ? JSON.parse(item) : fallback;
+  } catch (error) {
+    console.error(`Error parsing localStorage key "${key}":`, error);
+    return fallback;
+  }
+};
+
+const storedState = {
+  userId: safeParse("userId", null),
+  role: safeParse("role", null),
+  assessmentId: safeParse("assessmentId", null),
+  questionsArray: safeParse("questionsArray", []),
+  questionsMapping: safeParse("questionsMapping", {}),
+  answers: safeParse("answers", {}),
+  categories: safeParse("categories", [])
+};
+
 const userReducer = (state, action) => {
+  let newState = state;
+
   switch (action.type) {
     case "SET_USER":
-      return { ...state, userId: action.payload };
+      newState = { ...state, userId: action.payload };
+      localStorage.setItem("userId", JSON.stringify(action.payload));
+      break;
     case "SET_ROLE":
-      return { ...state, role: action.payload };
+      newState = { ...state, role: action.payload };
+      localStorage.setItem("role", JSON.stringify(action.payload));
+      break;
     case "SET_ASSESSMENT":
-      return { ...state, assessmentId: action.payload };
+      newState = { ...state, assessmentId: action.payload };
+      localStorage.setItem("assessmentId", JSON.stringify(action.payload));
+      break;
     case "CLEAR_ASSESSMENT":
-      return { ...state, assessmentId: null };
+      newState = { ...state, assessmentId: null };
+      localStorage.removeItem("assessmentId");
+      break;
     case "SET_QUESTIONS_ARRAY":
-      return { ...state, questionsArray: action.payload || [] };
+      newState = { ...state, questionsArray: action.payload || [] };
+      localStorage.setItem("questionsArray", JSON.stringify(action.payload));
+      break;
     case "SET_QUESTIONS_MAPPING":
-      return { ...state, questionsMapping: action.payload || {} };
+      newState = { ...state, questionsMapping: action.payload || {} };
+      localStorage.setItem("questionsMapping", JSON.stringify(action.payload));
+      break;
     case "SET_ANSWERS":
-      return { ...state, answers: action.payload || {} };
+      newState = { ...state, answers: action.payload || {} };
+      localStorage.setItem("answers", JSON.stringify(action.payload));
+      break;
     case "UPDATE_ANSWERS":
-      return { ...state, answers: { ...state.answers, ...action.payload } };
+      newState = { ...state, answers: { ...state.answers, ...action.payload } };
+      localStorage.setItem("answers", JSON.stringify(newState.answers));
+      break;
     case "CLEAR_ANSWERS":
-      return { ...state, answers: null };
+      newState = { ...state, answers: {} };
+      localStorage.removeItem("answers");
+      break;
     case "SET_CATEGORIES":
-      return { ...state, categories: action.payload };
+      newState = { ...state, categories: action.payload };
+      localStorage.setItem("categories", JSON.stringify(action.payload));
+      break;
     case "LOGOUT":
+      localStorage.removeItem("userId");
+      localStorage.removeItem("role");
+      localStorage.removeItem("assessmentId");
+      localStorage.removeItem("answers");
       return initialState;
     default:
       return state;
   }
+
+  return newState;
 };
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(userReducer, initialState);
+  const [state, dispatch] = useReducer(userReducer, storedState);
+
+  useEffect(() => {
+    localStorage.setItem("userId", JSON.stringify(state.userId));
+    localStorage.setItem("role", JSON.stringify(state.role));
+    localStorage.setItem("assessmentId", JSON.stringify(state.assessmentId));
+    localStorage.setItem("questionsArray", JSON.stringify(state.questionsArray));
+    localStorage.setItem("questionsMapping", JSON.stringify(state.questionsMapping));
+    localStorage.setItem("answers", JSON.stringify(state.answers));
+    localStorage.setItem("categories", JSON.stringify(state.categories));
+  }, [state]);
 
   return (
     <UserContext.Provider value={{ state, dispatch }}>

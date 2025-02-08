@@ -14,7 +14,7 @@ router.get('/managers', async (req, res) => {
     }
 });
 
-// User Signup
+// Create user
 router.post('/signup', async (req, res) => {
     try {
         const { email, password, firstName, lastName } = req.body;

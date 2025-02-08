@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import SingleEvaluation from './SingleAssessment';
+import SingleAssessment from './SingleAssessment';
 
-const EmployeeHome = () => {
+const Home = () => {
   const { state, dispatch } = useUser();
   const navigate = useNavigate();
   const [assessments, setAssessments] = useState([]);
@@ -12,10 +12,16 @@ const EmployeeHome = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    dispatch({ type: "SET_USER", payload: 1 });
+    dispatch({ type: "SET_ROLE", payload: "Software Engineer" });
+  }, [dispatch]);
+  
+
+  useEffect(() => {
     if (state.userId) {
       setLoading(true);
       axios
-        .get(`/api/assessments`, { params: { userId: state.userId } })
+        .get(`${process.env.REACT_APP_API_URL}/api/assessments`, { params: { userId: state.userId } })
         .then((response) => {
           setAssessments(response.data);
         })
@@ -28,12 +34,12 @@ const EmployeeHome = () => {
         });
       setLoading(false);
     }
-  }, [state.userId]);
+  }, [state.userId, assessments]);
 
   useEffect(() => {
     if (state.role) {
       axios
-        .get(`/api/questions`, { params: { role: state.role } })
+        .get(`${process.env.REACT_APP_API_URL}/api/questions`, { params: { role: state.role } })
         .then((response) => {
           const questions = response.data;
           
@@ -68,10 +74,15 @@ const EmployeeHome = () => {
   const createAndOpenAssessment = () => {
     if (state.userId) {
       axios
-        .post(`/api/assessments`, { userId: state.userId })
+        .post(`${process.env.REACT_APP_API_URL}/api/assessments`, { userId: state.userId })
         .then((response) => {
-          const newAssessmentId = response.data.assessmentId;
+          const newAssessmentId = response.data.assessmentid;
           dispatch({ type: "SET_ASSESSMENT", payload: newAssessmentId});
+
+          setTimeout(() => {
+            navigate(`/assessment/${newAssessmentId}`);
+          }, 0);
+
           navigate(`/assessment/${newAssessmentId}`);
         })
         .catch((error) => {
@@ -80,6 +91,19 @@ const EmployeeHome = () => {
         });
     }
   };
+
+  const handleDeleteAssessment = (assessmentId) => {
+    axios
+      .delete(`${process.env.REACT_APP_API_URL}/api/assessments/${assessmentId}`)
+      .then(() => {
+        setAssessments(prev => prev.filter(a => a.assessmentId !== assessmentId));
+      })
+      .catch(error => {
+        console.error("Error deleting assessment:", error);
+        setError(error.response?.data?.message || "An error occurred");
+      });
+  };
+  
 
   return (
     <div className="employee-home-page">
@@ -90,12 +114,13 @@ const EmployeeHome = () => {
         <p style={{ color: "red" }}>{error}</p>
       ) : (
         <div className="evaluations-list">
-          {assessments.map(({ assessmentId, status, date }) => (
-            <SingleEvaluation
-              key={assessmentId}
-              assessmentId={assessmentId}
+          {assessments.map(({ assessmentid, status, date }) => (
+            <SingleAssessment
+              key={assessmentid}
+              assessmentId={assessmentid}
               status={status}
               date={date}
+              onDelete={handleDeleteAssessment}
             />
           ))}
         </div>
@@ -105,4 +130,4 @@ const EmployeeHome = () => {
   );
 };
 
-export default EmployeeHome;
+export default Home;

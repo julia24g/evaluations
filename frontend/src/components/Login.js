@@ -20,12 +20,10 @@ const Login = () => {
           }
         };
   
-        // Dispatch actions to set user data in context
         dispatch({ type: "SET_USER", payload: response.data.userId });
         dispatch({ type: "SET_ROLE", payload: response.data.role });
         dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} });
   
-        // Navigate to the dashboard
         navigate("/");
       } else {
         alert("Invalid credentials! Try again.");

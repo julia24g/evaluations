@@ -12,15 +12,14 @@ const Questions = ({ categoryName }) => {
       {questionsArray
       .filter((question) => question.category === categoryName)
       .map((question) => (
-        <SingleQuestion
-          key={question.questionId}
-          questionKey={question.questionId}
-          text={question.questionText}
-          level={question.level}
-          relatedPEOCapabilities={question.relatedPEOCapabilities}
-          relatedPEOBehaviours={question.relatedPEOBehaviours}
-          category={categoryName}
-        />
+          <SingleQuestion
+            key={question.questionid}
+            questionKey={question.questionid}
+            text={question.questiontext}
+            level={question.level}
+            relatedPEOCapabilities={question.relatedpeocapabilities || ""}
+            relatedPEOBehaviours={question.relatedpeobehaviours || ""}
+          />
       ))}
       </form>
     </div>
