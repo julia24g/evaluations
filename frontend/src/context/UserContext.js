@@ -1,5 +1,7 @@
 import React, { createContext, useReducer, useContext, useEffect } from "react";
 
+// Create result store
+
 const initialState = {
   userId: null,
   role: null,
@@ -7,7 +9,8 @@ const initialState = {
   questionsArray: [],
   questionsMapping: {},
   answers: {},
-  categories: []
+  categories: [],
+  resultStore: {}
 };
 
 const safeParse = (key, fallback) => {
@@ -71,14 +74,19 @@ const userReducer = (state, action) => {
       localStorage.removeItem("answers");
       break;
     case "SET_CATEGORIES":
-      newState = { ...state, categories: action.payload };
+      newState = { ...state, categories: action.payload || [] };
       localStorage.setItem("categories", JSON.stringify(action.payload));
+      break;
+    case "SET_RESULTSTORE":
+      newState = { ...state, resultStore: action.payload || {} };
+      localStorage.setItem("resultStore", JSON.stringify(action.payload));
       break;
     case "LOGOUT":
       localStorage.removeItem("userId");
       localStorage.removeItem("role");
       localStorage.removeItem("assessmentId");
       localStorage.removeItem("answers");
+      localStorage.removeItem("resultStore");
       return initialState;
     default:
       return state;
@@ -100,6 +108,7 @@ export const UserProvider = ({ children }) => {
     localStorage.setItem("questionsMapping", JSON.stringify(state.questionsMapping));
     localStorage.setItem("answers", JSON.stringify(state.answers));
     localStorage.setItem("categories", JSON.stringify(state.categories));
+    localStorage.setItem("resultStore", JSON.stringify(state.resultStore));
   }, [state]);
 
   return (

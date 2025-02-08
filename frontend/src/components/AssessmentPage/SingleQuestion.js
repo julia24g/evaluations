@@ -34,7 +34,7 @@ const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, rela
           </button>
         </div>
       </div>
-    {commentActive && <Comments questionKey={questionKey}/>}
+    {commentActive && <Comments questionKey={questionKey} onExit={handleCommentClick}/>}
     </div>
   );
 };

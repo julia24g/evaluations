@@ -10,7 +10,7 @@ router.get('/:assessmentId/:questionId', async (req, res) => {
             return res.status(400).json({ message: "Invalid assessmentId or questionId" });
         }
 
-        const query = 'SELECT * FROM comment WHERE assessmentId = $1 AND questionId = $2 ORDER BY date DESC';
+        const query = 'SELECT * FROM comment WHERE assessmentId = $1 AND questionId = $2 ORDER BY date ASC';
         const result = await pool.query(query, [assessmentId, questionId]);
 
         res.status(200).json(result.rows);

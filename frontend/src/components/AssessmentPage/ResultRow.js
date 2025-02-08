@@ -1,45 +1,27 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useUser } from '../../context/UserContext';
 
 const ResultRow = ({ category }) => {
-
-    // get questions per category per role per level?
-
+    
     const { state } = useUser();
+    const resultStore = state.resultStore || {};
 
-    // const answers = useSelector((state) => state.answers.answers);
+    const levels = ["category", "Intermediate", "Senior", "Principal"];
 
-    // if (!answers?.[category]) return null;
-    // const scores = {};
-    // let numCategoryQs = 0;
-    // let categoryTotal = 0;
-
-    // Object.entries(answers[category]).forEach(([level, questions]) => {
-    //     let numLevelQs = 0;
-    //     let levelTotal = 0;
-
-    //     Object.values(questions).forEach((q) => {
-    //         if (q.answer in answerMapping) {
-    //             numLevelQs += 1;
-    //             levelTotal += answerMapping[q.answer];
-    //         }
-    //     });
-
-    //     scores[level] = numLevelQs > 0 ? levelTotal / numLevelQs : 0;
-    //     numCategoryQs += numLevelQs;
-    //     categoryTotal += levelTotal;
-    // });
-
-    // scores["Category"] = numCategoryQs > 0 ? categoryTotal / numCategoryQs : 0;
+    // Safe getter function to avoid errors
+    const getAverage = (cat, level) => {
+        if (!resultStore[cat] || !resultStore[cat][level]) return "N/A";
+        const { total = 0, count = 1 } = resultStore[cat][level];
+        console.log(total, count)
+        return count > 0 ? (total / count).toFixed(2) : "N/A";
+    };
 
     return (
         <tr>
-            {/* <th scope="row">{category}</th>
-            <td>{scores["Category"].toFixed(2)}</td>
-            <td>{scores["Intermediate"]?.toFixed(2) || "N/A"}</td>
-            <td>{scores["Senior"]?.toFixed(2) || "N/A"}</td>
-            <td>{scores["Principal"]?.toFixed(2) || "N/A"}</td> */}
+            <th scope="row">{category}</th>
+            {levels.map((level) => (
+                <td key={level}>{getAverage(category, level)}</td>
+            ))}
         </tr>
     );
 };

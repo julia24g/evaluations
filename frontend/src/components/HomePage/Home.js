@@ -10,6 +10,7 @@ const Home = () => {
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  let tempResultStore = {}
 
   useEffect(() => {
     dispatch({ type: "SET_USER", payload: 1 });
@@ -57,11 +58,11 @@ const Home = () => {
           dispatch({ type: "SET_CATEGORIES", payload: categories || [] })
 
           // Turn questions into a dictionary
-          const questionsDictionary = questions.reduce((acc, question) => {
-            acc[question.questionId] = question;
+          const questionsMapping = questions.reduce((acc, question) => {
+            acc[question.questionid] = question;
             return acc;
           }, {});
-          dispatch({ type: "SET_QUESTIONS_MAPPING", payload: questionsDictionary });
+          dispatch({ type: "SET_QUESTIONS_MAPPING", payload: questionsMapping });
 
         })
         .catch((error) => {
@@ -70,6 +71,37 @@ const Home = () => {
         })
     }
   }, [state.role]);
+
+  useEffect(() => {
+    if (state.questionsArray.length > 0) {
+      const tempResultStore = {};
+  
+      state.questionsArray.forEach((question) => {
+        const { category, level } = question;
+  
+        // Ensure category exists
+        if (!tempResultStore[category]) {
+          tempResultStore[category] = {};
+        }
+  
+        // Ensure level exists
+        if (!tempResultStore[category][level]) {
+          tempResultStore[category][level] = { count: 0, total: 0 };
+        }
+
+        // Ensure the "category level" exists
+        if (!tempResultStore[category]["category"]) {
+          tempResultStore[category]["category"] = { count: 0, total: 0 };
+        }
+  
+        tempResultStore[category][level].count += 1;
+        tempResultStore[category]["category"].count += 1;
+      });
+  
+      dispatch({ type: "SET_RESULTSTORE", payload: tempResultStore });
+    }
+  }, [state.questionsArray]);
+  
 
   const createAndOpenAssessment = () => {
     if (state.userId) {

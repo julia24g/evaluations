@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Category from './Category';
 import Results from './Results';
 import { useUser } from '../../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Evaluation = ({}) => {
+const Assessment = ({}) => {
   const { state, dispatch } = useUser();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const categories = state.categories
 
@@ -29,6 +31,10 @@ const Evaluation = ({}) => {
     }
   }, [state.assessmentId, dispatch]);
 
+  const handleBackButtonClick = () => {
+    navigate(`/`);
+  }
+
   const resultsCategory = { key: categories.length, name: "Results" };
   const allCategories = [...categories, resultsCategory];
 
@@ -42,6 +48,11 @@ const Evaluation = ({}) => {
     <div className="evaluation d-flex" style={{ height: '100vh' }}>
         <nav className="navbar bg-body-tertiary flex-shrink-0 p-3" style={{ width: '280px' }}>
           <div className="container-fluid flex-column">
+          <button type="button" className="btn" onClick={handleBackButtonClick}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+            </svg>
+          </button>
             <span className="navbar-brand mb-0 h1">Navbar</span>
             <hr></hr>
             <ul className="nav nav-pills flex-column mb-auto">
@@ -67,4 +78,4 @@ const Evaluation = ({}) => {
   );
 };
 
-export default Evaluation;
+export default Assessment;
