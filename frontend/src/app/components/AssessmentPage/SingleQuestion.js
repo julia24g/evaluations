@@ -15,9 +15,9 @@ const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, rela
       <div className="row">
         <div className="col-9 mb-3">
           <label className="form-label">{text}</label>
-          <span className="badge rounded-pill text-bg-primary">{level}</span>
-          {relatedPEOCapabilities.length > 0 && <p>Related PEO Capabilities: {relatedPEOCapabilities}</p>}
-          {relatedPEOBehaviours.length > 0 && <p>Related PEO Behaviours: {relatedPEOBehaviours}</p>}
+          <span className="badge rounded-pill">{level}</span>
+          {relatedPEOCapabilities.length > 0 && <p className="badge rounded-pill">{relatedPEOCapabilities}</p>}
+          {relatedPEOBehaviours.length > 0 && <p className="badge rounded-pill">{relatedPEOBehaviours}</p>}
 
         </div>
         <div className="col-2">
@@ -26,11 +26,12 @@ const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, rela
         <div className="col-1">
           <button 
               type="button" 
-              className="btn btn-secondary"
+              className="btn"
               onClick={handleCommentClick}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-text-fill" viewBox="0 0 16 16">
-                  <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z"></path>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                  <path fillRule="evenodd" d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97ZM6.75 8.25a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H7.5Z" clipRule="evenodd" />
                 </svg>
+
           </button>
         </div>
       </div>

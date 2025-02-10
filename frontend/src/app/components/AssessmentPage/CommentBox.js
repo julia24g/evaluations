@@ -10,7 +10,7 @@ const CommentBox = ({ questionKey }) => {
     const handleNewCommentClick = () => {
         if (state.userId && commentText.trim() !== "") {
             axios
-              .post(`${process.env.REACT_APP_API_URL}/api/comments/${state.assessmentId}/${questionKey}`, { 
+              .post(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentId}/${questionKey}`, { 
                 userId: state.userId, 
                 commentText: commentText 
               })

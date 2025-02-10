@@ -23,7 +23,7 @@ const Signup = () => {
     }
 
     axios
-    .post(`${process.env.REACT_APP_API_URL}/api/users`, { email: email, password: password, firstName: firstName, lastName: lastName })
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, { email: email, password: password, firstName: firstName, lastName: lastName })
     .then((response) => {
       const userId = response.data;
       dispatch({ type: "SET_USER", payload: userId});

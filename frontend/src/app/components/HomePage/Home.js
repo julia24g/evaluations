@@ -22,7 +22,7 @@ const Home = () => {
     if (state.userId) {
       setLoading(true);
       axios
-        .get(`${process.env.REACT_APP_API_URL}/api/assessments`, { params: { userId: state.userId } })
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { params: { userId: state.userId } })
         .then((response) => {
           setAssessments(response.data);
         })
@@ -40,7 +40,7 @@ const Home = () => {
   useEffect(() => {
     if (state.role) {
       axios
-        .get(`${process.env.REACT_APP_API_URL}/api/questions`, { params: { role: state.role } })
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`, { params: { role: state.role } })
         .then((response) => {
           const questions = response.data;
           
@@ -106,7 +106,7 @@ const Home = () => {
   const createAndOpenAssessment = () => {
     if (state.userId) {
       axios
-        .post(`${process.env.REACT_APP_API_URL}/api/assessments`, { userId: state.userId })
+        .post(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { userId: state.userId })
         .then((response) => {
           const newAssessmentId = response.data.assessmentid;
           dispatch({ type: "SET_ASSESSMENT", payload: newAssessmentId});
@@ -126,7 +126,7 @@ const Home = () => {
 
   const handleDeleteAssessment = (assessmentId) => {
     axios
-      .delete(`${process.env.REACT_APP_API_URL}/api/assessments/${assessmentId}`)
+      .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${assessmentId}`)
       .then(() => {
         setAssessments(prev => prev.filter(a => a.assessmentId !== assessmentId));
       })
@@ -138,8 +138,10 @@ const Home = () => {
   
 
   return (
-    <div className="employee-home-page">
+    <div className="employee-home-page prose">
       <h1>Employee Assessments</h1>
+      <p>Some text about what this is...</p>
+      <button className="btn" onClick={createAndOpenAssessment}>Create New Assessment</button>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -157,7 +159,6 @@ const Home = () => {
           ))}
         </div>
       )}
-      <button onClick={createAndOpenAssessment}>Create New Assessment</button>
     </div>
   );
 };

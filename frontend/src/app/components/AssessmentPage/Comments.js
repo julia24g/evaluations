@@ -12,7 +12,7 @@ const Comments = ({ questionKey, onExit }) => {
   useEffect(() => {
     if (state.userId && state.assessmentId){
       axios
-        .get(`${process.env.REACT_APP_API_URL}/api/comments/${state.assessmentId}/${questionKey}`)
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentId}/${questionKey}`)
         .then((response) => {
           setComments(response.data);
         })
@@ -27,7 +27,7 @@ const Comments = ({ questionKey, onExit }) => {
   const handleDelete = (commentId) => {
     if (state.userId && state.assessmentId){
       axios
-        .delete(`${process.env.REACT_APP_API_URL}/api/comments/${commentId}`, { userId: state.userId })
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`, { userId: state.userId })
         .then(() => {
           setComments(prev => prev.filter(c => c.commentId !== commentId));
         })
@@ -46,7 +46,7 @@ const Comments = ({ questionKey, onExit }) => {
           style={{ 
             width: '300px', 
             height: '100vh', 
-            position: 'fixed',
+            // position: 'fixed',
             right: 0,
             top: 0,
             overflowY: 'auto',}}

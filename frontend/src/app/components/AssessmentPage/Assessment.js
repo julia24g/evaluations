@@ -14,27 +14,25 @@ const Assessment = ({}) => {
   const categories = state.categories
 
   useEffect(() => {
-    if (state.userId && state.assessmentId) {
-      setLoading(true);
-      axios
-        .get(`${process.env.REACT_APP_API_URL}/api/assessments/form/${state.assessmentId}`)
-        .then((response) => {
-          dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} })
-        })
-        .catch((error) => {
-          console.error("Error fetching assessment data:", error);
-          setError(error.response?.data?.message || "An error occurred");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+
+    const fetchData = async () => {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/form/${state.assessmentId}`)
+      const answers = res.data.assessmentAnswers
+
+      if (answers) {
+        dispatch({ type: "SET_ANSWERS", payload: answers })
+      }
     }
+
+    setLoading(true)
+    fetchData()
+    setLoading(false)
   }, [state.assessmentId, dispatch]);
 
   const handleBackButtonClick = () => {
     // save answers to DB and local storage
     axios
-      .put(`${process.env.REACT_APP_API_URL}/api/assessments/${state.assessmentId}`, {assessmentAnswers: state.answers})
+      .put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentId}`, {assessmentAnswers: state.answers})
       .catch((error) => {
         console.error("Error updating assessment answers:", error);
         setError(error.response?.data?.message || "An error occurred");
