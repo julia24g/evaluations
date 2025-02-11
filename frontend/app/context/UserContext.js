@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useReducer, useContext, useEffect } from "react";
 
 // Create result store
@@ -14,6 +15,10 @@ const initialState = {
 };
 
 const safeParse = (key, fallback) => {
+  if (typeof window === "undefined") {
+    return fallback;
+  }
+  
   try {
     const item = localStorage.getItem(key);
     return item && item !== "undefined" ? JSON.parse(item) : fallback;
@@ -22,6 +27,7 @@ const safeParse = (key, fallback) => {
     return fallback;
   }
 };
+
 
 const storedState = {
   userId: safeParse("userId", null),

@@ -1,4 +1,4 @@
-import './globals.css';
+import '@/app/ui/global.css';
 import { UserProvider } from './context/UserContext';
 
 export const metadata = {

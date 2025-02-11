@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import SingleQuestion from './SingleQuestion';
 import { useUser } from '../../context/UserContext';
@@ -8,7 +9,6 @@ const Questions = ({ categoryName }) => {
 
   return (
     <div className="questions">
-      <form>
       {questionsArray
       .filter((question) => question.category === categoryName)
       .map((question) => (
@@ -21,7 +21,6 @@ const Questions = ({ categoryName }) => {
             relatedPEOBehaviours={question.relatedpeobehaviours || ""}
           />
       ))}
-      </form>
     </div>
   );
 };

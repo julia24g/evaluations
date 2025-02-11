@@ -1,11 +1,11 @@
-import './app/styles/App.css';
+import '../app/styles/globals.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { UserProvider } from "./app/context/UserContext";
+import { UserProvider } from "./context/UserContext";
 
-import Assessment from './app/components/AssessmentPage/Assessment';
-import Login from './app/components/Login';
-import Signup from './app/components/Signup';
-import Home from './app/components/HomePage/Home';
+import Assessment from './components/AssessmentPage/Assessment';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Home from './dashboard/components/Home';
 
 
 function App() {

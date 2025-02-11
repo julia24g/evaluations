@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { useUser } from '../../context/UserContext';
 
@@ -30,7 +31,6 @@ const DropDownAnswer = ({ questionKey }) => {
       type: "UPDATE_ANSWERS",
       payload: { [questionKey]: selectedScore },
     });
-    console.log(state.answers)
   };
 
   return (

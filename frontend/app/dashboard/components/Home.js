@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/UserContext';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from "next/navigation";
 import SingleAssessment from './SingleAssessment';
 
 const Home = () => {
   const { state, dispatch } = useUser();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -112,10 +112,10 @@ const Home = () => {
           dispatch({ type: "SET_ASSESSMENT", payload: newAssessmentId});
 
           setTimeout(() => {
-            navigate(`/assessment/${newAssessmentId}`);
+            router.push(`/assessment/${newAssessmentId}`);
           }, 0);
 
-          navigate(`/assessment/${newAssessmentId}`);
+          router.push(`/assessment/${newAssessmentId}`);
         })
         .catch((error) => {
           console.error("Error creating assessment:", error);

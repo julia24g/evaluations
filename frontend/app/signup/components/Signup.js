@@ -1,7 +1,9 @@
+"use client";
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUser } from '../context/UserContext';
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useUser } from "../context/UserContext";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -10,11 +12,11 @@ const Signup = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
-
+  
+  const router = useRouter();
   const { dispatch } = useUser();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -22,20 +24,22 @@ const Signup = () => {
       return;
     }
 
-    axios
-    .post(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, { email: email, password: password, firstName: firstName, lastName: lastName })
-    .then((response) => {
-      const userId = response.data;
-      dispatch({ type: "SET_USER", payload: userId});
-      navigate(`/login`);
-    })
-    .catch((error) => {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+        email,
+        password,
+        firstName,
+        lastName
+      });
+
+      dispatch({ type: "SET_USER", payload: response.data.userId });
+
+      alert("Signup successful! Please log in.");
+      router.push("/login"); // Navigate programmatically after signup
+    } catch (error) {
       console.error("Error creating user:", error);
       setError(error.response?.data?.message || "An error occurred");
-    });
-
-    alert("Signup successful! Please log in.");
-    navigate("/");
+    }
   };
 
   return (
@@ -90,8 +94,12 @@ const Signup = () => {
         <button type="submit">Sign Up</button>
       </form>
 
+      {error && <p className="error-message">{error}</p>}
+
       <p>Already have an account?</p>
-      <button onClick={() => navigate("/")}>Login</button>
+      <Link href="/login">
+        <button>Login</button>
+      </Link>
     </div>
   );
 };

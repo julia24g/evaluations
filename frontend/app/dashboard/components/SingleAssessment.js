@@ -1,15 +1,16 @@
+"use client";
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from "next/navigation";
 import { useUser } from '../../context/UserContext';
 
 const SingleAssessment = ({ assessmentId, status, level, date, onDelete }) => {
   
-  const navigate = useNavigate();
+  const router = useRouter();
   const { dispatch } = useUser();
 
   const openAssessment = () => {
     dispatch({ type: "SET_ASSESSMENT", payload: assessmentId});
-    navigate(`/assessment/${assessmentId}`);
+    router.push(`/assessment/${assessmentId}`);
   }
 
   const formatDate = (dateString) => {
@@ -27,7 +28,6 @@ const SingleAssessment = ({ assessmentId, status, level, date, onDelete }) => {
         <h2 className="card-title">
           {level} Promotion Assessment
         </h2>
-        <h3 class="text-red-500">Julia Groza</h3>
         <div>{formatDate(date)}</div>
         <div className="badge badge-outline">{status}</div>
         <button onClick={() => onDelete(assessmentId)} className="assessment-button">
