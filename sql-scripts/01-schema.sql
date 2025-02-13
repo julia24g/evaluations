@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS assessment (
     assessmentId SERIAL PRIMARY KEY,
     userId INT NOT NULL,
-    level VARCHAR(20) CHECK (level IN ('Intermediate', 'Senior', 'Principal'))
+    level VARCHAR(20) CHECK (level IN ('Intermediate', 'Senior', 'Principal')),
     status VARCHAR(50) NOT NULL DEFAULT 'In Progress',
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     assessmentAnswers JSONB NULL,
