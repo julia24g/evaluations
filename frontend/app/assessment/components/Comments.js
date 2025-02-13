@@ -4,13 +4,16 @@ import SingleComment from './SingleComment';
 import CommentBox from './CommentBox';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
+import LoadingOverlay from './LoadingOverlay';
 
 const Comments = ({ questionKey }) => {
   const { state } = useUser();
   const [error, setError] = useState("");
   const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true)
     if (state.userId && state.assessmentId){
       axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentId}/${questionKey}`)
@@ -23,6 +26,7 @@ const Comments = ({ questionKey }) => {
         })
 
     }
+    setLoading(false);
   }, [state.userId, state.assessmentId])
 
   const handleDelete = (commentId) => {
@@ -65,6 +69,7 @@ const Comments = ({ questionKey }) => {
           </div>
         </div>
         <div className="drawer-side">
+          {loading && <LoadingOverlay />}
           <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
           <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
             {/* Sidebar content here */}

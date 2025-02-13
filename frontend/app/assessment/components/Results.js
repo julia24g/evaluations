@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ResultRow from "./ResultRow";
 import { useUser } from "../../context/UserContext";
+import LoadingOverlay from "./LoadingOverlay";
 
 const Results = () => {
   const { state, dispatch } = useUser();
   const { questionsMapping, answers, categories, resultStore } = state;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     if (!answers || !questionsMapping || !resultStore) return;
 
     const updatedResultStore = JSON.parse(JSON.stringify(resultStore));
@@ -33,10 +36,12 @@ const Results = () => {
     if (JSON.stringify(resultStore) !== JSON.stringify(updatedResultStore)) {
       dispatch({ type: "SET_RESULTSTORE", payload: updatedResultStore });
     }
+    setLoading(false);
   }, [answers, questionsMapping, dispatch]);
 
   return (
-    <div className="results">
+    <div>
+      {loading && <LoadingOverlay />}
       <table className="table">
         <thead>
           <tr>

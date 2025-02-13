@@ -1,23 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Category from "./Category";
 import Results from "./Results";
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import LoadingOverlay from "./LoadingOverlay";
+import ScrollIndicator from "./ScrollIndicator";
 
 const Assessment = () => {
   const { state, dispatch } = useUser();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const contentRef = useRef(null);
 
   const categories = state.categories || [];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/form/${state.assessmentId}`
         );
@@ -26,15 +30,15 @@ const Assessment = () => {
         if (answers) {
           dispatch({ type: "SET_ANSWERS", payload: answers });
         }
+        setLoading(false);
       } catch (err) {
         console.error("Error fetching assessment data:", err);
         setError(err.response?.data?.message || "An error occurred");
       }
     };
 
-    setLoading(true);
     fetchData();
-    setLoading(false);
+    
   }, [state.assessmentId, dispatch]);
 
   const handleBackButtonClick = async () => {
@@ -69,31 +73,33 @@ const Assessment = () => {
         </div>
       </div> */}
       <div className="flex h-screen">
-      {/* ✅ Sidebar menu */}
-      <div className="w-60 bg-base-200 p-4 overflow-y-auto">
-        <ul className="menu rounded-box">
-          <li className="menu-title">Assessment Title</li>
-          
-          {allCategories.map((category) => (
-            <li key={category.key}>
-              <a
-                className={`block p-2 rounded ${
-                  activeTab === category.name ? "bg-primary text-white" : "hover:bg-base-300"
-                }`}
-                onClick={() => setActiveTab(category.name)}
-              >
-                {category.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+        {loading && <LoadingOverlay />}
+        {/* ✅ Sidebar menu */}
+        <div className="w-60 bg-base-200 p-4 overflow-y-auto">
+          <ul className="menu rounded-box">
+            <li className="menu-title">Assessment Title</li>
+            
+            {allCategories.map((category) => (
+              <li key={category.key}>
+                <a
+                  className={`block p-2 rounded ${
+                    activeTab === category.name ? "bg-primary text-white" : "hover:bg-base-300"
+                  }`}
+                  onClick={() => setActiveTab(category.name)}
+                >
+                  {category.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      {/* ✅ Right-side content */}
-      <div className="flex-1 p-6 overflow-auto">
-        {activeTab === "Results" ? <Results /> : <Category categoryName={activeTab} />}
+        {/* ✅ Right-side content */}
+        <div className="flex-1 p-6 overflow-auto" ref={contentRef}>
+          {activeTab === "Results" ? <Results /> : <Category categoryName={activeTab} />}
+          <ScrollIndicator targetRef={contentRef} />
+        </div>
       </div>
-    </div>
     </>
   );
 };
