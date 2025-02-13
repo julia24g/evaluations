@@ -34,12 +34,12 @@ const DropDownAnswer = ({ questionKey }) => {
   };
 
   return (
-    <div className="dropdown-answer">
+    <div>
       <select
         id={questionKey}
         value={currentAnswer}
         onChange={handleAnswerChange}
-        className="form-select"
+        className="select select-bordered w-full max-w-xs"
       >
         <option value="Not Observed">Not Observed</option>
         <option value="Not Applicable">Not Applicable</option>

@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useReducer, useContext, useEffect } from "react";
 
-// Create result store
 
 const initialState = {
   userId: null,

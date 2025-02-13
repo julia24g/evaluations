@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useUser } from "../context/UserContext";
+import { useUser } from "../../context/UserContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");

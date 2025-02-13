@@ -13,7 +13,7 @@ const Assessment = () => {
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  const categories = state.categories;
+  const categories = state.categories || [];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +42,8 @@ const Assessment = () => {
       await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentId}`, {
         assessmentAnswers: state.answers,
       });
-
+      dispatch({ type: "CLEAR_ASSESSMENT" });
+      dispatch({ type: "CLEAR_ANSWERS" });
       router.push("/dashboard");
     } catch (error) {
       console.error("Error updating assessment answers:", error);
@@ -53,47 +54,32 @@ const Assessment = () => {
   const resultsCategory = { key: categories.length, name: "Results" };
   const allCategories = [...categories, resultsCategory];
 
-  const [activeTab, setActiveTab] = useState(categories[0].name);
+  const [activeTab, setActiveTab] = useState(categories.length > 0 ? categories[0].name : "Results");
 
   return (
-    <div className="evaluation d-flex" style={{ height: "100vh" }}>
-      <nav className="navbar bg-body-tertiary flex-shrink-0 p-3" style={{ width: "280px" }}>
-        <div className="container-fluid flex-column">
-          <button type="button" className="btn" onClick={handleBackButtonClick}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-arrow-left"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fillRule="evenodd"
-                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
-              />
-            </svg>
-          </button>
+    <div className="flex h-screen">
+      {/* ✅ Sidebar menu */}
+      <div className="w-60 bg-base-200 p-4">
+        <h2 className="menu-title">Assessment Title</h2>
+        <ul className="menu rounded-box">
+          {allCategories.map((category) => (
+            <li key={category.key}>
+              <a
+                className={`block p-2 rounded ${
+                  activeTab === category.name ? "bg-primary text-white" : "hover:bg-base-300"
+                }`}
+                onClick={() => setActiveTab(category.name)}
+              >
+                {category.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-          <span className="navbar-brand mb-0 h1">Navbar</span>
-          <hr />
-          <ul className="nav nav-pills flex-column mb-auto">
-            {allCategories.map((category) => (
-              <li className="nav-item" key={category.key}>
-                <button
-                  className={`nav-link ${activeTab === category.name ? "active" : ""}`}
-                  onClick={() => setActiveTab(category.name)}
-                >
-                  {category.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
-      <div className="flex-grow-1 p-3">
-        {activeTab === "Results" && <Results />}
-        {activeTab !== "Results" && <Category categoryName={activeTab} />}
+      {/* ✅ Right-side content */}
+      <div className="flex-1 p-6 overflow-auto">
+        {activeTab === "Results" ? <Results /> : <Category categoryName={activeTab} />}
       </div>
     </div>
   );

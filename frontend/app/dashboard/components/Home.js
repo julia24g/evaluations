@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../../context/UserContext';
@@ -10,7 +11,6 @@ const Home = () => {
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  let tempResultStore = {}
 
   useEffect(() => {
     dispatch({ type: "SET_USER", payload: 1 });
@@ -112,10 +112,10 @@ const Home = () => {
           dispatch({ type: "SET_ASSESSMENT", payload: newAssessmentId});
 
           setTimeout(() => {
-            router.push(`/assessment/${newAssessmentId}`);
+            router.push(`/assessment`);
           }, 0);
 
-          router.push(`/assessment/${newAssessmentId}`);
+          router.push(`/assessment`);
         })
         .catch((error) => {
           console.error("Error creating assessment:", error);
@@ -138,7 +138,7 @@ const Home = () => {
   
 
   return (
-    <div className="employee-home-page prose">
+    <div className="prose">
       <h1>Employee Assessments</h1>
       <p>Some text about what this is...</p>
       <button className="btn" onClick={createAndOpenAssessment}>Create New Assessment</button>

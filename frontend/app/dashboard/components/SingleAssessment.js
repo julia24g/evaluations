@@ -10,7 +10,7 @@ const SingleAssessment = ({ assessmentId, status, level, date, onDelete }) => {
 
   const openAssessment = () => {
     dispatch({ type: "SET_ASSESSMENT", payload: assessmentId});
-    router.push(`/assessment/${assessmentId}`);
+    router.push(`/assessment`);
   }
 
   const formatDate = (dateString) => {

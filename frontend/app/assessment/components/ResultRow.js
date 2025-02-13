@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { useUser } from '../../context/UserContext';
 
@@ -8,7 +9,6 @@ const ResultRow = ({ category }) => {
 
     const levels = ["category", "Intermediate", "Senior", "Principal"];
 
-    // Safe getter function to avoid errors
     const getAverage = (cat, level) => {
         if (!resultStore[cat] || !resultStore[cat][level]) return "N/A";
         const { total = 0, count = 1 } = resultStore[cat][level];
