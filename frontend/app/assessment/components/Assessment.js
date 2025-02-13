@@ -57,11 +57,23 @@ const Assessment = () => {
   const [activeTab, setActiveTab] = useState(categories.length > 0 ? categories[0].name : "Results");
 
   return (
-    <div className="flex h-screen">
+    <>
+      {/* <div className="navbar bg-base-100">
+        <div className="flex-none">
+        <button className="btn btn-ghost btn-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
+              <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
+              <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
+            </svg>
+          </button>
+        </div>
+      </div> */}
+      <div className="flex h-screen">
       {/* ✅ Sidebar menu */}
-      <div className="w-60 bg-base-200 p-4">
-        <h2 className="menu-title">Assessment Title</h2>
+      <div className="w-60 bg-base-200 p-4 overflow-y-auto">
         <ul className="menu rounded-box">
+          <li className="menu-title">Assessment Title</li>
+          
           {allCategories.map((category) => (
             <li key={category.key}>
               <a
@@ -82,6 +94,7 @@ const Assessment = () => {
         {activeTab === "Results" ? <Results /> : <Category categoryName={activeTab} />}
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,27 +1,34 @@
-"use client"
-import React, { useState } from 'react';
-import DropDownAnswer from './DropDownAnswer';
-import Comments from './Comments';
+"use client";
+import React, { useState } from "react";
+import DropDownAnswer from "./DropDownAnswer";
+import Comments from "./Comments";
 
 const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities, relatedPEOBehaviours }) => {
 
   return (
-    <div className="single-question container">
-      <div className="row">
-        <div className="col-9 mb-3">
-          <label className="form-label">{text}</label>
-          <div className='mt-1'>
+    <div className="single-question w-full p-4 bg-base-100">
+      <div className="flex items-center">
+        <div className="w-9/12">
+          <label className="">{text}</label>
+          <div className="mt-2 flex flex-wrap gap-2">
             <span className="badge badge-accent">{level}</span>
-            {relatedPEOCapabilities.length > 0 && <p className="badge badge-primary">{relatedPEOCapabilities}</p>}
-            {relatedPEOBehaviours.length > 0 && <p className="badge badge-secondary">{relatedPEOBehaviours}</p>}
+            {relatedPEOCapabilities.length > 0 && (
+              <span className="badge badge-primary">{relatedPEOCapabilities}</span>
+            )}
+            {relatedPEOBehaviours.length > 0 && (
+              <span className="badge badge-secondary">{relatedPEOBehaviours}</span>
+            )}
           </div>
-
         </div>
-        <div className="col-2">
-          <DropDownAnswer questionKey={questionKey}/>
+
+        <div className="w-2/12">
+          <DropDownAnswer questionKey={questionKey} />
+        </div>
+
+        <div className="w-1/12 flex justify-end">
+          <Comments questionKey={questionKey} />
         </div>
       </div>
-    <Comments questionKey={questionKey}/>
     </div>
   );
 };

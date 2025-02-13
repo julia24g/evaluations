@@ -22,11 +22,11 @@ export default function RootLayout({ children }) {
             <a className="btn btn-ghost text-xl">daisyUI</a>
           </div>
         <UserProvider>{children}</UserProvider>
-        <footer className="footer footer-center bg-base-300 text-base-content p-4">
+        {/* <footer className="footer footer-center bg-base-300 text-base-content p-4">
           <aside>
             <p>Copyright © {new Date().getFullYear()} - All right reserved by ACME Industries Ltd</p>
           </aside>
-        </footer>
+        </footer> */}
       </body>
     </html>
   );
