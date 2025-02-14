@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useUser } from '../../context/UserContext';
 import { useRouter } from "next/navigation";
 import SingleAssessment from './SingleAssessment';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const Home = () => {
   const { state, dispatch } = useUser();
@@ -136,11 +138,60 @@ const Home = () => {
       });
   };
   
-
   return (
-    <div className="prose">
+    <>
+      <div className="prose">
       <h1>Employee Assessments</h1>
       <p>Some text about what this is...</p>
+      <Menu as="div" className="relative inline-block text-left">
+      <div>
+        {/* ✅ Main Button */}
+        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+          Create Assessment
+          <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
+        </MenuButton>
+      </div>
+
+      {/* ✅ Dropdown Menu */}
+      <MenuItems
+        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-none 
+                   transition-transform scale-95 opacity-0 data-[headlessui-state=open]:scale-100 data-[headlessui-state=open]:opacity-100"
+      >
+        <div className="py-1">
+          {/* ✅ Dropdown Items */}
+          <MenuItem>
+            {({ active }) => (
+              <button
+                onClick={() => onSelect("Intermediate")}
+                className={`block w-full px-4 py-2 text-sm text-gray-700 text-left ${active ? "bg-gray-100 text-gray-900" : ""}`}
+              >
+                Intermediate Assessment
+              </button>
+            )}
+          </MenuItem>
+          <MenuItem>
+            {({ active }) => (
+              <button
+                onClick={() => onSelect("Senior")}
+                className={`block w-full px-4 py-2 text-sm text-gray-700 text-left ${active ? "bg-gray-100 text-gray-900" : ""}`}
+              >
+                Senior Assessment
+              </button>
+            )}
+          </MenuItem>
+          <MenuItem>
+            {({ active }) => (
+              <button
+                onClick={() => onSelect("Principal")}
+                className={`block w-full px-4 py-2 text-sm text-gray-700 text-left ${active ? "bg-gray-100 text-gray-900" : ""}`}
+              >
+                Principal Assessment
+              </button>
+            )}
+          </MenuItem>
+        </div>
+      </MenuItems>
+    </Menu>
       <button className="btn" onClick={createAndOpenAssessment}>Create New Assessment</button>
       {loading ? (
         <p>Loading...</p>
@@ -160,6 +211,8 @@ const Home = () => {
         </div>
       )}
     </div>
+    </>
+
   );
 };
 
