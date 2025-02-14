@@ -11,7 +11,7 @@ const CommentBox = ({ questionKey }) => {
   const { state } = useUser();
 
   const handleNewCommentClick = async () => {
-    if (!state.userId || commentText.trim() === "") return;
+    if (!state.userInfo.userId || commentText.trim() === "") return;
 
     setLoading(true);
 
@@ -19,7 +19,7 @@ const CommentBox = ({ questionKey }) => {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentId}/${questionKey}`,
         {
-          userId: state.userId,
+          userId: state.userInfo.userId,
           commentText,
         }
       );

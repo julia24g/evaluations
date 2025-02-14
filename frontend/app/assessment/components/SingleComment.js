@@ -4,7 +4,7 @@ import { useUser } from "../../context/UserContext";
 
 const SingleComment = ({ commentId, userId, text, onDelete }) => {
   const { state } = useUser();
-  const isFromCurrentUser = state.userId === userId;
+  const isFromCurrentUser = state.userInfo.userId === userId;
   const chatDirection = isFromCurrentUser ? "chat-end" : "chat-start";
 
   return (

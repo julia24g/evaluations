@@ -3,8 +3,7 @@ import React, { createContext, useReducer, useContext, useEffect } from "react";
 
 
 const initialState = {
-  userId: null,
-  role: null,
+  userInfo: {},
   assessmentId: null, 
   questionsArray: [],
   questionsMapping: {},
@@ -29,7 +28,7 @@ const safeParse = (key, fallback) => {
 
 
 const storedState = {
-  userId: safeParse("userId", null),
+  userInfo: safeParse("userInfo", null),
   role: safeParse("role", null),
   assessmentId: safeParse("assessmentId", null),
   questionsArray: safeParse("questionsArray", []),
@@ -42,13 +41,9 @@ const userReducer = (state, action) => {
   let newState = state;
 
   switch (action.type) {
-    case "SET_USER":
-      newState = { ...state, userId: action.payload };
-      localStorage.setItem("userId", JSON.stringify(action.payload));
-      break;
-    case "SET_ROLE":
-      newState = { ...state, role: action.payload };
-      localStorage.setItem("role", JSON.stringify(action.payload));
+    case "SET_USER_INFO":
+      newState = { ...state, userInfo: action.payload || {} };
+      localStorage.setItem("userInfo", JSON.stringify(action.payload));
       break;
     case "SET_ASSESSMENT":
       newState = { ...state, assessmentId: action.payload };
@@ -87,8 +82,7 @@ const userReducer = (state, action) => {
       localStorage.setItem("resultStore", JSON.stringify(action.payload));
       break;
     case "LOGOUT":
-      localStorage.removeItem("userId");
-      localStorage.removeItem("role");
+      localStorage.removeItem("userInfo");
       localStorage.removeItem("assessmentId");
       localStorage.removeItem("answers");
       localStorage.removeItem("resultStore");
@@ -106,8 +100,7 @@ export const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, storedState);
 
   useEffect(() => {
-    localStorage.setItem("userId", JSON.stringify(state.userId));
-    localStorage.setItem("role", JSON.stringify(state.role));
+    localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
     localStorage.setItem("assessmentId", JSON.stringify(state.assessmentId));
     localStorage.setItem("questionsArray", JSON.stringify(state.questionsArray));
     localStorage.setItem("questionsMapping", JSON.stringify(state.questionsMapping));

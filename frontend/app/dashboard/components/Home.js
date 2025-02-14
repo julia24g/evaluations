@@ -14,6 +14,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // add logic for what is visible and not visible
+
   useEffect(() => {
     dispatch({ type: "SET_USER", payload: 1 });
     dispatch({ type: "SET_ROLE", payload: "Software Engineer" });
@@ -21,10 +23,10 @@ const Home = () => {
   
 
   useEffect(() => {
-    if (state.userId) {
+    if (state.userInfo.userId) {
       setLoading(true);
       axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { params: { userId: state.userId } })
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { params: { userId: state.userInfo.userId } })
         .then((response) => {
           setAssessments(response.data);
         })
@@ -37,12 +39,12 @@ const Home = () => {
         });
       setLoading(false);
     }
-  }, [state.userId, assessments]);
+  }, [state.userInfo.userId, assessments]);
 
   useEffect(() => {
-    if (state.role) {
+    if (state.userInfo.role) {
       axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`, { params: { role: state.role } })
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`, { params: { role: state.userInfo.role } })
         .then((response) => {
           const questions = response.data;
           
@@ -72,7 +74,7 @@ const Home = () => {
           setError(error.response?.data?.message || "An error occurred");
         })
     }
-  }, [state.role]);
+  }, [state.userInfo.role]);
 
   useEffect(() => {
     if (state.questionsArray.length > 0) {
@@ -106,9 +108,9 @@ const Home = () => {
   
 
   const createAndOpenAssessment = () => {
-    if (state.userId) {
+    if (state.userInfo.userId) {
       axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { userId: state.userId })
+        .post(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { userId: state.userInfo.userId })
         .then((response) => {
           const newAssessmentId = response.data.assessmentid;
           dispatch({ type: "SET_ASSESSMENT", payload: newAssessmentId});
@@ -139,8 +141,8 @@ const Home = () => {
   };
   
   return (
-    <>
-      <div className="prose">
+    <div className="p-0 max-w-3xl mx-auto bg-white rounded-lg">
+      <div>
       <h1>Employee Assessments</h1>
       <p>Some text about what this is...</p>
       <Menu as="div" className="relative inline-block text-left">
@@ -193,25 +195,22 @@ const Home = () => {
       </MenuItems>
     </Menu>
       <button className="btn" onClick={createAndOpenAssessment}>Create New Assessment</button>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (
-        <div className="evaluations-list">
-          {assessments.map(({ assessmentid, status, date }) => (
-            <SingleAssessment
-              key={assessmentid}
-              assessmentId={assessmentid}
-              status={status}
-              date={date}
-              onDelete={handleDeleteAssessment}
-            />
-          ))}
-        </div>
-      )}
+      <ul role="list" className="divide-y divide-gray-100">
+        {assessments.map(({ assessmentid, status, level, firstname, lastname, date }) => (
+          <SingleAssessment
+            key={assessmentid}
+            assessmentId={assessmentid}
+            status={status}
+            level={level}
+            firstname={firstname}
+            lastname={lastname}
+            date={date}
+            onDelete={handleDeleteAssessment}
+          />
+        ))}
+      </ul>
     </div>
-    </>
+    </div>
 
   );
 };

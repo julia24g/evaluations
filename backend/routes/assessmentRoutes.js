@@ -82,14 +82,26 @@ router.get('/', async (req, res) => {
 
         const query = `
             WITH RECURSIVE subordinates AS (
+                -- Start with the given userId
                 SELECT userId FROM users WHERE userId = $1
                 UNION ALL
-                SELECT u.userId FROM users u
+                -- Recursively find subordinates by matching managerId
+                SELECT u.userId 
+                FROM users u
                 INNER JOIN subordinates s ON u.managerId = s.userId
             )
-            SELECT a.assessmentId, a.userId, a.status, a.date
+            SELECT 
+                a.assessmentId, 
+                a.userId, 
+                u.firstName, 
+                u.lastName, 
+                u.role, 
+                a.status, 
+                a.date, 
+                a.level
             FROM assessment a
-            JOIN subordinates s ON a.userId = s.userId;
+            JOIN subordinates s ON a.userId = s.userId
+            JOIN users u ON a.userId = u.userId;
         `;
 
         const { rows } = await pool.query(query, [userId]);
@@ -99,6 +111,43 @@ router.get('/', async (req, res) => {
     } catch (err) {
         console.error("Error fetching assessment data:", err.message);
         res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+// Submit assessment for review
+router.put("/review/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const query = `UPDATE assessment SET status = 'In Review' WHERE assessmentId = $1`;
+        const result = await pool.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Assessment not found' });
+        }
+
+        res.json({ message: 'Assessment updated successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Complete assessment
+router.put("/complete/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = `UPDATE assessment SET status = 'Complete' WHERE assessmentId = $1`;
+        const result = await pool.query(query, [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Assessment not found" });
+        }
+
+        res.json({ message: "Assessment updated successfully" });
+    } catch (err) {
+        console.error("Server error:", err.message);
+        res.status(500).send("Server Error");
     }
 });
 

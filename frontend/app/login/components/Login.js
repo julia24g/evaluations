@@ -16,15 +16,17 @@ const Login = () => {
       if (email === "111@111.com" && password === "111") {
         const response = {
           data: {
-            userId: 1,
-            role: "Software Engineer",
-            assessmentAnswers: {},
+            userInfo: {
+              userId: 1,
+              role: "Software Engineer",
+              individualContributor: true
+            },
+            assessmentAnswers: {}
           },
         };
 
-        dispatch({ type: "SET_USER", payload: response.data.userId });
-        dispatch({ type: "SET_ROLE", payload: response.data.role });
         dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} });
+        dispatch({ type: "SET_USER_INFO", payload: response.data.userInfo });
 
         router.push("/dashboard");
       } else {
