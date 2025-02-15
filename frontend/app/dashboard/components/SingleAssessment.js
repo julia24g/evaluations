@@ -5,7 +5,9 @@ import { useUser } from '../../context/UserContext';
 
 const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, date, onDelete }) => {
 
-  // add logic for what's enabled and disabled
+  const { state } = useUser()
+  const openButtonActivated = state.userInfo.individualContributor === false 
+  || (state.userInfo.individualContributor === true && status === 'In Progress')
   
   const router = useRouter();
   const { dispatch } = useUser();
@@ -41,7 +43,7 @@ const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, da
 
       {/* Right Section: Actions */}
       <div className="flex items-center gap-x-3">
-        {(state.userInfo.individualContributor === true && state.userInfo.status === 'In Progress') &&
+        { openButtonActivated &&
           <button onClick={openAssessment} className="btn btn-sm">
             Open
           </button>

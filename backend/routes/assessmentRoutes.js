@@ -22,9 +22,9 @@ router.get('/form/:id', async (req, res) => {
 // Create a new assessment
 router.post('/', async (req, res) => {
     try {
-        const { userId } = req.body;
-        const query = 'INSERT INTO assessment (userId) VALUES ($1) RETURNING *';
-        const values = [userId];
+        const { userId, level } = req.body;
+        const query = 'INSERT INTO assessment (userId, level) VALUES ($1, $2) RETURNING *';
+        const values = [userId, level];
 
         const result = await pool.query(query, values);
         res.status(201).json(result.rows[0]);
