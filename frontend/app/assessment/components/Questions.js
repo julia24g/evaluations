@@ -9,18 +9,20 @@ const Questions = ({ categoryName }) => {
 
   return (
     <div className="questions">
-      {questionsArray
-      .filter((question) => question.category === categoryName)
-      .map((question) => (
-          <SingleQuestion
-            key={question.questionid}
-            questionKey={question.questionid}
-            text={question.questiontext}
-            level={question.level}
-            relatedPEOCapabilities={question.relatedpeocapabilities || ""}
-            relatedPEOBehaviours={question.relatedpeobehaviours || ""}
-          />
-      ))}
+      <ul role="list" className="divide-y divide-gray-100">
+        {questionsArray
+        .filter((question) => question.category === categoryName)
+        .map((question) => (
+            <SingleQuestion
+              key={question.questionid}
+              questionKey={question.questionid}
+              text={question.questiontext}
+              level={question.level}
+              relatedPEOCapabilities={question.relatedpeocapabilities || ""}
+              relatedPEOBehaviours={question.relatedpeobehaviours || ""}
+            />
+        ))}
+      </ul>
     </div>
   );
 };

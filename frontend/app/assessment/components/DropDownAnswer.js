@@ -1,10 +1,13 @@
-"use client"
-import React from 'react';
-import { useUser } from '../../context/UserContext';
+"use client";
+import React from "react";
+import { useUser } from "../../context/UserContext";
+import { Field, Select } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
 
 const DropDownAnswer = ({ questionKey }) => {
-
   const { state, dispatch } = useUser();
+  const isDisabled = state.assessmentInfo?.status === "Complete";
 
   const scoreMapping = {
     "Not Observed": 0,
@@ -14,7 +17,7 @@ const DropDownAnswer = ({ questionKey }) => {
     "Frequently": 2,
     "Always": 3,
   };
-  
+
   const reverseScoreMapping = {
     0: "Not Observed",
     1: "Occasionally",
@@ -22,7 +25,7 @@ const DropDownAnswer = ({ questionKey }) => {
     3: "Always",
   };
 
-  const currentAnswer = reverseScoreMapping[state.answers[questionKey]] || "Not Observed";
+  const currentAnswer = reverseScoreMapping[state.answers?.[questionKey]] || "Not Observed";
 
   const handleAnswerChange = (event) => {
     const selectedAnswer = event.target.value;
@@ -34,20 +37,33 @@ const DropDownAnswer = ({ questionKey }) => {
   };
 
   return (
-    <div>
-      <select
-        id={questionKey}
-        value={currentAnswer}
-        onChange={handleAnswerChange}
-        className="select select-bordered w-full max-w-xs"
-      >
-        <option value="Not Observed">Not Observed</option>
-        <option value="Not Applicable">Not Applicable</option>
-        <option value="Never">Never</option>
-        <option value="Occasionally">Occasionally</option>
-        <option value="Frequently">Frequently</option>
-        <option value="Always">Always</option>
-      </select>
+    <div className="w-full max-w-md px-4">
+      <Field>
+        <div className="relative">
+          <Select
+            id={questionKey}
+            value={currentAnswer}
+            onChange={handleAnswerChange}
+            disabled={isDisabled}
+            className={clsx(
+              "mt-3 block w-full appearance-none rounded-lg border border-gray-300 bg-white/5 py-1.5 px-3 text-sm text-gray-900",
+              "focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600",
+              "*:text-black",
+              isDisabled && "cursor-not-allowed opacity-50 bg-gray-200"
+            )}
+          >
+            {Object.keys(scoreMapping).map((answer) => (
+              <option key={answer} value={answer}>
+                {answer}
+              </option>
+            ))}
+          </Select>
+          <ChevronDownIcon
+            className="pointer-events-none absolute top-2.5 right-2.5 size-4 fill-gray-500"
+            aria-hidden="true"
+          />
+        </div>
+      </Field>
     </div>
   );
 };

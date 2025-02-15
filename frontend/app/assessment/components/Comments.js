@@ -14,9 +14,9 @@ const Comments = ({ questionKey }) => {
 
   useEffect(() => {
     setLoading(true)
-    if (state.userInfo.userId && state.assessmentId){
+    if (state.userInfo.userId && state.assessmentInfo.id){
       axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentId}/${questionKey}`)
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentInfo.id}/${questionKey}`)
         .then((response) => {
           setComments(response.data);
         })
@@ -27,10 +27,10 @@ const Comments = ({ questionKey }) => {
 
     }
     setLoading(false);
-  }, [state.userInfo.userId, state.assessmentId])
+  }, [state.userInfo.userId, state.assessmentInfo.id])
 
   const handleDelete = (commentId) => {
-    if (state.userInfo.userId && state.assessmentId){
+    if (state.userInfo.userId && state.assessmentInfo.id){
       axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`, { data: { userId: state.userInfo.userId } })
         .then(() => {

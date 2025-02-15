@@ -16,22 +16,33 @@ const Home = () => {
   const [inProgressAssmts, setInProgressAssmts] = useState([]);
   const [inReviewAssmts, setInReviewAssmts] = useState([]);
   const [completeAssmts, setCompleteAssmts] = useState([]);
-
-  const isCreateButtonActive = state.userInfo?.individualContributor === true;
-
+  
+  const [isMounted, setIsMounted] = useState(false);
+  
   useEffect(() => {
-    dispatch({ type: "SET_USER_INFO", payload: {"userId": 1, "role": "Software Engineer", "individualContributor": true} });
+    setIsMounted(true);
+    dispatch({
+      type: "SET_USER_INFO",
+      payload: { userId: 1, role: "Software Engineer", individualContributor: true },
+    });
   }, [dispatch]);
 
   useEffect(() => {
-    if (state.userInfo?.userId) {
+    const fetchAssessments = async () => {
+      if (!state.userInfo?.userId) return;
       setLoading(true);
-      axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { params: { userId: state.userInfo.userId } })
-        .then((response) => setAssessments(response.data))
-        .catch((error) => setError(error.response?.data?.message || "An error occurred"))
-        .finally(() => setLoading(false));
-    }
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, {
+          params: { userId: state.userInfo.userId },
+        });
+        setAssessments(data);
+      } catch (error) {
+        setError(error.response?.data?.message || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAssessments();
   }, [state.userInfo?.userId]);
 
   useEffect(() => {
@@ -42,30 +53,49 @@ const Home = () => {
     }
   }, [assessments]);
 
-  const createAndOpenAssessment = (level) => {
-    if (state.userInfo?.userId) {
-      axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, { userId: state.userInfo.userId, level: level })
-        .then((response) => {
-          dispatch({ type: "SET_ASSESSMENT", payload: response.data.assessmentid });
-          router.push(`/assessment`);
-        })
-        .catch((error) => setError(error.response?.data?.message || "An error occurred"));
+  const createAndOpenAssessment = async (level) => {
+    if (!state.userInfo?.userId) return;
+    try {
+      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, {
+        userId: state.userInfo.userId,
+        level: level,
+      });
+      dispatch({ type: "SET_ASSESSMENT_INFO", payload: { "id": data.assessmentid, "status": "In Progress" }});
+      router.push(`/assessment`);
+    } catch (error) {
+      setError(error.response?.data?.message || "An error occurred");
     }
   };
 
-  const handleDeleteAssessment = (assessmentId) => {
-    axios
-      .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${assessmentId}`)
-      .then(() => {
-        setAssessments((prev) => prev.filter((a) => a.assessmentId !== assessmentId));
-        setInProgressAssmts((prev) => prev.filter((a) => a.assessmentId !== assessmentId));
-        setInReviewAssmts((prev) => prev.filter((a) => a.assessmentId !== assessmentId));
-        setCompleteAssmts((prev) => prev.filter((a) => a.assessmentId !== assessmentId));
-        console.log("here");
-      })
-      .catch((error) => setError(error.response?.data?.message || "An error occurred"));
+  const handleDeleteAssessment = async (assessmentId) => {
+    const deletedAssessment = assessments.find(a => a.assessmentid === assessmentId);
+    
+    setAssessments((prev) => prev.filter((a) => a.assessmentid !== assessmentId));
+    if (deletedAssessment.status === "In Progress") {
+      setInProgressAssmts((prev) => prev.filter((a) => a.assessmentid !== assessmentId));
+    } else if (deletedAssessment.status === "In Review") {
+      setInReviewAssmts((prev) => prev.filter((a) => a.assessmentid !== assessmentId));
+    } else if (deletedAssessment.status === "Complete") {
+      setCompleteAssmts((prev) => prev.filter((a) => a.assessmentid !== assessmentId));
+    }
+  
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${assessmentId}`);
+    } catch (error) {
+      setError(error.response?.data?.message || "An error occurred");
+  
+      setAssessments((prev) => [...prev, deletedAssessment]);
+  
+      if (deletedAssessment.status === "In Progress") {
+        setInProgressAssmts((prev) => [...prev, deletedAssessment]);
+      } else if (deletedAssessment.status === "In Review") {
+        setInReviewAssmts((prev) => [...prev, deletedAssessment]);
+      } else if (deletedAssessment.status === "Complete") {
+        setCompleteAssmts((prev) => [...prev, deletedAssessment]);
+      }
+    }
   };
+  
 
   const renderAssessmentsList = (title, assessmentsList) => {
     if (assessmentsList.length === 0) return null;
@@ -95,7 +125,7 @@ const Home = () => {
       <h1 className="font-semibold text-gray-900 sm:text-5xl">Performance Evaluations</h1>
       <p className="mt-2 text-gray-600">This is an app for PCC performance evaluations.</p>
 
-      {isCreateButtonActive && (
+      {isMounted && state.userInfo?.individualContributor && (
         <Menu as="div" className="relative inline-block text-left mt-4">
           <div>
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">

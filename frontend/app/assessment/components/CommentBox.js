@@ -17,7 +17,7 @@ const CommentBox = ({ questionKey }) => {
 
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentId}/${questionKey}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentInfo.id}/${questionKey}`,
         {
           userId: state.userInfo.userId,
           commentText,

@@ -23,7 +23,7 @@ const Assessment = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/form/${state.assessmentId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/form/${state.assessmentInfo.id}`
         );
         const answers = res.data.assessmentAnswers;
 
@@ -39,11 +39,11 @@ const Assessment = () => {
 
     fetchData();
     
-  }, [state.assessmentId, dispatch]);
+  }, [state.assessmentInfo.id, dispatch]);
 
   const handleBackButtonClick = async () => {
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentId}`, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentInfo.id}`, {
         assessmentAnswers: state.answers,
       });
       dispatch({ type: "CLEAR_ASSESSMENT" });
