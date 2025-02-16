@@ -48,7 +48,7 @@ const userReducer = (state, action) => {
       newState = { ...state, assessmentInfo: action.payload || {} };
       localStorage.setItem("assessmentInfo", JSON.stringify(action.payload));
       break;
-    case "CLEAR_ASSESSMENT":
+    case "CLEAR_ASSESSMENT_INFO":
       newState = { ...state, assessmentInfo: {} };
       localStorage.removeItem("assessmentInfo");
       break;

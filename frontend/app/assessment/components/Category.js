@@ -9,7 +9,6 @@ const Category = ({ categoryName }) => {
 
   return (
     <div className="flex-grow-1 p-3">
-      <h2 className="text-xl font-semibold mb-4">{categoryName}</h2>
 
       <TabGroup>
         <TabList className="flex space-x-1 rounded-lg bg-gray-100 p-1">

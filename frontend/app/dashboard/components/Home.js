@@ -179,7 +179,7 @@ const Home = () => {
 
   return (
     <>
-    <NavBar/>
+    <NavBar individualContributor={state.userInfo.individualContributor}/>
       <div className="p-6 max-w-3xl mx-auto">
         <h1 className="font-semibold text-gray-900 sm:text-5xl">Performance Evaluations</h1>
         <p className="mt-2 text-gray-600">This is an app for PCC performance evaluations.</p>
