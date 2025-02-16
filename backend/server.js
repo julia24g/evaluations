@@ -15,11 +15,13 @@ const assessmentRoutes = require('./routes/assessmentRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const questionRoutes = require('./routes/questionRoutes');
+const employeesRoutes = require('./routes/employeesRoutes');
 
 app.use('/api/assessments', assessmentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/employees', employeesRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

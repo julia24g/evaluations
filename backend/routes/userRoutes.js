@@ -17,11 +17,11 @@ router.get('/managers', async (req, res) => {
 // Create user
 router.post('/signup', async (req, res) => {
     try {
-        const { email, password, firstName, lastName } = req.body;
+        const { email, password, firstName, lastName, managerId, individualContributor } = req.body;
         const query = `
-            INSERT INTO users (email, password, firstName, lastName)
-            VALUES ($1, $2, $3, $4) RETURNING *`;
-        const values = [email, password, firstName, lastName];
+            INSERT INTO users (email, password, firstName, lastName, managerId, individualContributor)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
+        const values = [email, password, firstName, lastName, managerId, individualContributor];
 
         const result = await pool.query(query, values);
         res.json(result.rows[0]);

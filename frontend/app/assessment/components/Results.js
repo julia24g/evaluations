@@ -7,14 +7,14 @@ import LoadingOverlay from "./LoadingOverlay";
 
 const Results = () => {
   const { state, dispatch } = useUser();
-  const { questionsMapping, answers, categories, resultStore } = state;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    if (!answers || !questionsMapping || !resultStore) return;
+    if (!state.answers || !state.questionsMapping || !state.resultStore) return;
 
-    const updatedResultStore = JSON.parse(JSON.stringify(resultStore));
+
+    const updatedResultStore = JSON.parse(JSON.stringify(state.resultStore));
 
     Object.keys(updatedResultStore).forEach((category) => {
       Object.keys(updatedResultStore[category]).forEach((level) => {
@@ -22,8 +22,10 @@ const Results = () => {
       });
     });
 
-    Object.entries(answers).forEach(([key, value]) => {
-      const question = questionsMapping[key];
+    updatedResultStore["category"] = 
+
+    Object.entries(state.answers).forEach(([key, value]) => {
+      const question = state.questionsMapping[key];
       if (!question) return;
 
       const { category, level } = question;
@@ -33,11 +35,11 @@ const Results = () => {
       updatedResultStore[category]["category"].total += value;
     });
 
-    if (JSON.stringify(resultStore) !== JSON.stringify(updatedResultStore)) {
+    if (JSON.stringify(state.resultStore) !== JSON.stringify(updatedResultStore)) {
       dispatch({ type: "SET_RESULTSTORE", payload: updatedResultStore });
     }
     setLoading(false);
-  }, [answers, questionsMapping, dispatch]);
+  }, [state.answers, state.questionsMapping, dispatch]);
 
   return (
     <div>
@@ -45,7 +47,7 @@ const Results = () => {
       <table className="table">
         <thead>
           <tr>
-            <th scope="col">#</th>
+            <th scope="col"></th>
             <th scope="col">Category</th>
             <th scope="col">Intermediate</th>
             <th scope="col">Senior</th>
@@ -53,7 +55,7 @@ const Results = () => {
           </tr>
         </thead>
         <tbody>
-          {categories.map((c) => (
+          {state.categories.map((c) => (
             <ResultRow key={c.key} category={c.name} />
           ))}
         </tbody>

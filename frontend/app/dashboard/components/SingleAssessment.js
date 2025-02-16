@@ -5,14 +5,13 @@ import { useUser } from '../../context/UserContext';
 
 const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, date, onDelete }) => {
 
-  const { state } = useUser()
+  const { state, dispatch } = useUser()
   const openButtonActivated = state.userInfo.individualContributor === false 
   || (state.userInfo.individualContributor === true && status === 'In Progress')
   const deleteButtonActivated = (state.userInfo.individualContributor === true && status === 'In Progress')
   || (state.userInfo.individualContributor === false && status === 'In Review')
   
   const router = useRouter();
-  const { dispatch } = useUser();
 
   const openAssessment = () => {
     dispatch({ type: "SET_ASSESSMENT_INFO", payload: {"id": assessmentId, "status": status}});

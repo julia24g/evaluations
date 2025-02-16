@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import SingleAssessment from './SingleAssessment';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import NavBar from '../../utils/NavBar';
 
 const Home = () => {
   const { state, dispatch } = useUser();
@@ -23,7 +24,7 @@ const Home = () => {
     setIsMounted(true);
     dispatch({
       type: "SET_USER_INFO",
-      payload: { userId: 1, role: "Software Engineer", individualContributor: true },
+      payload: { userId: 5, role: "Software Engineer", individualContributor: false },
     });
   }, [dispatch]);
 
@@ -52,6 +53,62 @@ const Home = () => {
       setCompleteAssmts(assessments.filter((assessment) => assessment.status === 'Complete'));
     }
   }, [assessments]);
+
+  useEffect(() => {
+    if (state.userInfo.role) {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`, { params: { role: state.userInfo.role } })
+        .then((response) => {
+          const questions = response.data;
+          
+          dispatch({ type: "SET_QUESTIONS_ARRAY", payload: questions });
+
+          const categories = Array.from(
+            new Set(
+              questions
+                .map((question) => question.category)
+            )
+          ).map((category, index) => ({ key: index, name: category }));
+
+          dispatch({ type: "SET_CATEGORIES", payload: categories || [] })
+
+          const questionsMapping = questions.reduce((acc, question) => {
+            acc[question.questionid] = question;
+            return acc;
+          }, {});
+          dispatch({ type: "SET_QUESTIONS_MAPPING", payload: questionsMapping });
+
+        })
+        .catch((error) => {
+          console.error("Error fetching evaluations:", error);
+          setError(error.response?.data?.message || "An error occurred");
+        })
+    }
+  }, [state.userInfo.role]);
+
+  useEffect(() => {
+    if (state.questionsArray.length > 0) {
+      const tempResultStore = {};
+  
+      state.questionsArray.forEach((question) => {
+        const { category, level } = question;
+          if (!tempResultStore[category]) {
+          tempResultStore[category] = {};
+        }
+          if (!tempResultStore[category][level]) {
+          tempResultStore[category][level] = { count: 0, total: 0 };
+        }
+        if (!tempResultStore[category]["category"]) {
+          tempResultStore[category]["category"] = { count: 0, total: 0 };
+        }
+  
+        tempResultStore[category][level].count += 1;
+        tempResultStore[category]["category"].count += 1;
+      });
+  
+      dispatch({ type: "SET_RESULTSTORE", payload: tempResultStore });
+    }
+  }, [state.questionsArray]);
 
   const createAndOpenAssessment = async (level) => {
     if (!state.userInfo?.userId) return;
@@ -121,44 +178,47 @@ const Home = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-md">
-      <h1 className="font-semibold text-gray-900 sm:text-5xl">Performance Evaluations</h1>
-      <p className="mt-2 text-gray-600">This is an app for PCC performance evaluations.</p>
+    <>
+    <NavBar/>
+      <div className="p-6 max-w-3xl mx-auto">
+        <h1 className="font-semibold text-gray-900 sm:text-5xl">Performance Evaluations</h1>
+        <p className="mt-2 text-gray-600">This is an app for PCC performance evaluations.</p>
 
-      {isMounted && state.userInfo?.individualContributor && (
-        <Menu as="div" className="relative inline-block text-left mt-4">
-          <div>
-            <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
-              Create Assessment
-              <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
-            </MenuButton>
-          </div>
-
-          <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-none transition-transform scale-95 opacity-0 data-[headlessui-state=open]:scale-100 data-[headlessui-state=open]:opacity-100">
-            <div className="py-1">
-              {["Intermediate", "Senior", "Principal"].map((level) => (
-                <MenuItem key={level}>
-                  {({ active }) => (
-                    <button
-                      onClick={() => createAndOpenAssessment(level)}
-                      className={`block w-full px-4 py-2 text-sm text-gray-700 text-left ${
-                        active ? "bg-gray-100 text-gray-900" : ""
-                      }`}
-                    >
-                      {level}
-                    </button>
-                  )}
-                </MenuItem>
-              ))}
+        {isMounted && state.userInfo?.individualContributor && (
+          <Menu as="div" className="relative inline-block text-left mt-4">
+            <div>
+              <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
+                Create Assessment
+                <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
+              </MenuButton>
             </div>
-          </MenuItems>
-        </Menu>
-      )}
 
-      {renderAssessmentsList("In Review", inReviewAssmts)}
-      {renderAssessmentsList("In Progress", inProgressAssmts)}
-      {renderAssessmentsList("Complete", completeAssmts)}
-    </div>
+            <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-none transition-transform scale-95 opacity-0 data-[headlessui-state=open]:scale-100 data-[headlessui-state=open]:opacity-100">
+              <div className="py-1">
+                {["Intermediate", "Senior", "Principal"].map((level) => (
+                  <MenuItem key={level}>
+                    {({ active }) => (
+                      <button
+                        onClick={() => createAndOpenAssessment(level)}
+                        className={`block w-full px-4 py-2 text-sm text-gray-700 text-left ${
+                          active ? "bg-gray-100 text-gray-900" : ""
+                        }`}
+                      >
+                        {level}
+                      </button>
+                    )}
+                  </MenuItem>
+                ))}
+              </div>
+            </MenuItems>
+          </Menu>
+        )}
+
+        {renderAssessmentsList("In Review", inReviewAssmts)}
+        {renderAssessmentsList("In Progress", inProgressAssmts)}
+        {renderAssessmentsList("Complete", completeAssmts)}
+      </div>
+    </>
   );
 };
 

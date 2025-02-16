@@ -18,9 +18,6 @@ export default function RootLayout({ children }) {
         <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body>
-          <div className="navbar bg-base-100">
-            <a className="btn btn-ghost text-xl">perfEvals</a>
-          </div>
         <UserProvider>{children}</UserProvider>
         {/* <footer className="footer footer-center bg-base-300 text-base-content p-4">
           <aside>
