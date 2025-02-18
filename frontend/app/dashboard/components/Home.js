@@ -47,6 +47,18 @@ const Home = () => {
   }, [state.userInfo?.userId]);
 
   useEffect(() => {
+    dispatch({
+      type: "CLEAR_ASSESSMENT_INFO"
+    });
+    dispatch({
+      type: "CLEAR_ANSWERS"
+    });
+    dispatch({
+      type: "CLEAR_RESULTSTORE"
+    });
+  }, [])
+
+  useEffect(() => {
     if (assessments.length > 0) {
       setInProgressAssmts(assessments.filter((assessment) => assessment.status === 'In Progress'));
       setInReviewAssmts(assessments.filter((assessment) => assessment.status === 'In Review'));

@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "../../context/UserContext";
@@ -12,10 +12,26 @@ const Signup = () => {
   const [lastName, setLastName] = useState("");
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
+  const [managers, setManagers] = useState([]);
+  const [manager, setManager] = useState("");
 
   const router = useRouter();
   const { dispatch } = useUser();
 
+  useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/managers`);
+        setManagers(response.data);
+      } catch (error) {
+        console.error("Error getting managers:", error);
+        setError(error.response?.data?.message || "An error occurred");
+      }
+    };
+  
+    fetchManagers();
+  }, []);
+  
   const handleSignup = async (e) => {
     e.preventDefault();
 
@@ -121,6 +137,29 @@ const Signup = () => {
                 </option>
                 <option value="Software Engineer">Software Engineer</option>
                 <option value="Test Engineer">Test Engineer</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="role" className="block text-sm font-medium text-gray-900">
+              Manager
+            </label>
+            <div className="mt-2">
+              <select
+                id="manager"
+                name="manager"
+                required
+                value={manager}
+                onChange={(e) => setManager(e.target.value)}
+                className="select select-bordered w-full bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+              >
+                <option value="" disabled>
+                  Select manager
+                </option>
+                {managers.map((m) => 
+                  <option key={m.userid} value={m.userId}>{m.firstname} {m.lastname}</option>
+                )}
               </select>
             </div>
           </div>

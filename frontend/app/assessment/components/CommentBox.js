@@ -4,59 +4,43 @@ import React, { useState } from "react";
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 
-const CommentBox = ({ questionKey }) => {
+const CommentBox = ({ questionKey, onNewComment }) => {
   const [commentText, setCommentText] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { state } = useUser();
 
-  const handleNewCommentClick = async () => {
-    if (!state.userInfo.userId || commentText.trim() === "") return;
-
-    setLoading(true);
-
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentInfo.id}/${questionKey}`,
-        {
-          userId: state.userInfo.userId,
-          commentText,
-        }
-      );
-
-      setCommentText("");
-      setError("");
-    } catch (error) {
-      console.error("Error creating new comment:", error);
-      setError(error.response?.data?.message || "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleClick = () => {
+    onNewComment(commentText);
+    setCommentText("");
+  }
 
   return (
-    <div className="commentbox">
-      <div className="input-group">
-        <input
-          type="text"
-          className="input w-full max-w-xs"
-          placeholder="Add a comment"
-          aria-label="Add a comment"
+    <div key={questionKey} className="bg-white p-4 rounded-lg shadow-md">
+      <div className="mt-2">
+        <textarea
+          id="comment"
+          rows="4"
+          className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3"
+          placeholder="Write your comment here..."
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
           disabled={loading}
-        />
+        ></textarea>
       </div>
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={handleNewCommentClick}
-        disabled={loading}
-      >
-        {loading ? "Submitting..." : "Comment"}
-      </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+
+      <div className="mt-4 flex justify-end">
+        <button
+          type="button"
+          className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+          onClick={handleClick}
+          disabled={loading || commentText.trim() === ""}
+        >
+          {loading ? "Submitting..." : "Post"}
+        </button>
+      </div>
     </div>
   );
 };

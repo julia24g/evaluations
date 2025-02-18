@@ -4,9 +4,8 @@ import SingleComment from './SingleComment';
 import CommentBox from './CommentBox';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
-import LoadingOverlay from './LoadingOverlay';
 
-const Comments = ({ questionKey }) => {
+const HiddenComments = ({ questionKey }) => {
   const { state } = useUser();
   const [error, setError] = useState("");
   const [comments, setComments] = useState([]);
@@ -27,22 +26,61 @@ const Comments = ({ questionKey }) => {
 
     }
     setLoading(false);
-  }, [state.userInfo.userId, state.assessmentInfo.id])
+  }, [state.userInfo.userId, state.assessmentInfo.id, questionKey])
 
-  const handleDelete = (commentId) => {
-    if (state.userInfo.userId && state.assessmentInfo.id){
-      axios
-        .delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`, { data: { userId: state.userInfo.userId } })
-        .then(() => {
-          setComments(prev => prev.filter(c => c.commentId !== commentId));
-        })
-        .catch((error) => {
-          console.error("Error deleting comments:", error);
-          setError(error.response?.data?.message || "An error occurred");
-        })
+  const handleDelete = async (commentId) => {
+    if (!commentId) return;
+  
+    const previousComments = [...comments]
+    setComments((prev) => prev.filter((c) => c.commentid !== commentId));
+  
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      setError(error.response?.data?.message || "An error occurred");
+      setComments(previousComments);
     }
-  }
+  };
+  
 
+  const handleNewComment = async (commentText) => {
+    if (!state.userInfo.userId || commentText.trim() === "") return;
+  
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentInfo.id}/${questionKey}`,
+        {
+          userId: state.userInfo.userId,
+          commentText
+        }
+      );
+  
+      setComments((prev) => [...prev, response.data]);
+  
+    } catch (error) {
+      console.error("Error creating new comment:", error);
+      setError(error.response?.data?.message || "An error occurred");
+    }
+  };
+
+  // const handleEdit = async () => {
+  //   setComments((c) => c.commentid === commentId ? c.commenttext =  comm);
+  //   try {
+  //     await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/comments/${commentId}`,
+  //       {
+  //         userId: state.userInfo.userId,
+  //         commentText
+  //       }
+  //     );
+
+  //   }
+  //   catch {
+
+  //   }
+  // };
+  
+  
   return (
     <div>
       <div className="drawer drawer-end">
@@ -69,25 +107,21 @@ const Comments = ({ questionKey }) => {
           </div>
         </div>
         <div className="drawer-side">
-          {loading && <LoadingOverlay />}
           <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+          <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
             {/* Sidebar content here */}
-            <h4>Comments</h4>
+            <h3 className="text-base/7 font-semibold text-gray-900">Comments</h3>
             {/* Display Comments */}
-            {comments.length === 0 ? (
-              <p>No comments yet.</p>
-            ) : (
-              comments.map((comment) => (
+            {comments.map((comment) => (
                 <SingleComment key={comment.commentid} commentId={comment.commentid} userId={comment.userid} text={comment.commenttext} onDelete={handleDelete} />
               ))
-            )}
-            <CommentBox questionKey={questionKey} />
-          </ul>
+            }
+            <CommentBox questionKey={questionKey} onNewComment={handleNewComment} />
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Comments;
+export default HiddenComments;

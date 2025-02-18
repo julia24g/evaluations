@@ -8,7 +8,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import LoadingOverlay from "./LoadingOverlay";
 import ScrollIndicator from "./ScrollIndicator";
-import NavBar from "../../utils/NavBar";
 
 import {
   BriefcaseIcon,
@@ -17,15 +16,14 @@ import {
   CurrencyDollarIcon,
   MapPinIcon,
 } from '@heroicons/react/20/solid';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
 const Assessment = () => {
   const { state, dispatch } = useUser();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const router = useRouter();
   const contentRef = useRef(null);
-  const activeSubmitButton = state.assessmentInfo.status !== "Complete"
+  const activeSubmitButton = state.assessmentInfo.status !== "Complete";
+  const [presentationEnabled, setPresentationEnabled] = useState(false);
 
   const categories = state.categories || [];
 
@@ -52,17 +50,7 @@ const Assessment = () => {
     
   }, [state.assessmentInfo.id, dispatch]);
 
-  const handleBack = async () => {
-      setLoading(true);
-      await handleSave();
-      dispatch({ type: "CLEAR_ASSESSMENT_INFO" });
-      dispatch({ type: "CLEAR_ANSWERS" });
-      router.push("/dashboard");
-      setLoading(false);
-  }
-
   const handleSave = async () => {
-    setLoading(true);
     try {
       await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentInfo.id}`, {
         assessmentAnswers: state.answers,
@@ -70,9 +58,7 @@ const Assessment = () => {
     } catch (error) {
       console.error("Error updating assessment answers:", error);
       setError(error.response?.data?.message || "An error occurred");
-      setLoading(false);
     }
-    setLoading(false);
   }
 
   const handleSubmit = async () => {
@@ -94,6 +80,14 @@ const Assessment = () => {
     setLoading(false);
   }
 
+  const onToggle = () => {
+    const currentValue = JSON.parse(localStorage.getItem("presentationEnabled") || "false");
+    const newValue = !currentValue;
+    setPresentationEnabled(newValue);
+    localStorage.setItem("presentationEnabled", JSON.stringify(newValue));
+  };
+  
+
   const resultsCategory = { key: categories.length, name: "Results" };
   const allCategories = [...categories, resultsCategory];
 
@@ -101,17 +95,9 @@ const Assessment = () => {
 
   return (
     <>
-    <NavBar individualContributor={state.userInfo.individualContributor}/>
       {/* ✅ Header Section */}
       <div className="lg:flex lg:items-center lg:justify-between p-6">
         <div className="min-w-0 flex-1">
-          <button 
-          className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
-          onClick={handleBack}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-              <path fillRule="evenodd" d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
-            </svg>
-          </button>
           <h2 className="text-2xl font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             {state.assessmentInfo?.title || "Performance Assessment"}
           </h2>
@@ -134,6 +120,26 @@ const Assessment = () => {
             </div>
           </div>
         </div>
+        {state.assessmentInfo.status === 'In Review' && 
+              <div className="flex items-center gap-3">
+                {/* Label */}
+                <span className="text-sm font-medium text-gray-700">Presentation Mode</span>
+
+                {/* Toggle Button */}
+                <button
+                  onClick={onToggle}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                    presentationEnabled ? "bg-indigo-600" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                      presentationEnabled ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            }
         {activeSubmitButton &&
           <div className="mt-5 flex lg:mt-0 lg:ml-4">
             <span className="hidden sm:block">
@@ -142,7 +148,7 @@ const Assessment = () => {
                 className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50"
                 onClick={handleSave}
               >
-                Save Progress
+                Save
               </button>
             </span>
             <span className="sm:ml-3">

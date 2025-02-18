@@ -80,6 +80,10 @@ const userReducer = (state, action) => {
       newState = { ...state, resultStore: action.payload || {} };
       localStorage.setItem("resultStore", JSON.stringify(action.payload));
       break;
+    case "CLEAR_RESULTSTORE":
+      newState = { ...state, resultStore: {} };
+      localStorage.removeItem("resultStore");
+      break;
     case "LOGOUT":
       localStorage.removeItem("userInfo");
       localStorage.removeItem("assessmentInfo");

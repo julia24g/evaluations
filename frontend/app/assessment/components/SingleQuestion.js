@@ -1,11 +1,14 @@
 "use client";
 import React from "react";
 import DropDownAnswer from "./DropDownAnswer";
-import Comments from "./Comments";
+import HiddenComments from "./HiddenComments";
+import { useUser } from '../../context/UserContext';
+import DisplayedComments from "./DisplayedComments";
 
 const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities = "", relatedPEOBehaviours = "" }) => {
+  const { state } = useUser();
   return (
-    <li key={questionKey} className="flex flex-col gap-y-4 p-4">
+    <li className="flex flex-col gap-y-4 p-4">
       {/* Question Info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-x-6 w-full">
         <div className="flex-1">
@@ -30,9 +33,10 @@ const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities = "",
         {/* Dropdown & Comments Section */}
         <div className="flex items-center gap-4 sm:gap-6 ml-auto">
           <DropDownAnswer questionKey={questionKey} />
-          <Comments questionKey={questionKey} />
+          {state.assessmentInfo.status === "In Progress" && <HiddenComments key={questionKey} questionKey={questionKey} />}
         </div>
       </div>
+      {state.assessmentInfo.status !== "In Progress" && <DisplayedComments key={questionKey} questionKey={questionKey} />}
     </li>
   );
 };

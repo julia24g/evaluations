@@ -56,14 +56,9 @@ router.put('/:commentId', async (req, res) => {
 router.delete('/:commentId', async (req, res) => {
     try {
         const { commentId } = req.params;
-        const { userId } = req.body;
 
-        if (!userId) {
-            return res.status(400).json({ message: "User ID is required" });
-        }
-
-        const query = `DELETE FROM comment WHERE commentId = $1 AND userId = $2`;
-        const result = await pool.query(query, [commentId, userId]);
+        const query = `DELETE FROM comment WHERE commentId = $1`;
+        const result = await pool.query(query, [commentId]);
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: "Comment not found" });
