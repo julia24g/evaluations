@@ -6,14 +6,10 @@ meta {
 
 delete {
   url: {{host}}/api/comments/2
-  body: json
+  body: none
   auth: none
 }
 
 headers {
   Content-Type: application/json
-}
-
-body:json {
-  {"userId":5}
 }

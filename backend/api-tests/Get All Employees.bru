@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:3000/api/employees
+  url: {{host}}/api/employees?userId=5
   body: none
   auth: none
+}
+
+params:query {
+  userId: 5
 }
 
 headers {

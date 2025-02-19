@@ -88,10 +88,10 @@ const Assessment = () => {
   };
   
 
-  const resultsCategory = { key: categories.length, name: "Results" };
-  const allCategories = [...categories, resultsCategory];
+  const resultsKey = categories.length;
+  const peerFeedbackKey = categories.length + 1;
 
-  const [activeTab, setActiveTab] = useState(categories.length > 0 ? categories[0].name : "Results");
+  const [activeTab, setActiveTab] = useState(categories[0].name);
 
   return (
     <>
@@ -171,18 +171,47 @@ const Assessment = () => {
         {/* Sidebar menu */}
         <div className="w-60 bg-base-200 p-4 overflow-y-auto">
           <ul className="menu rounded-box">
-            {allCategories.map((category) => (
-              <li key={category.key}>
+            <li>
+              <details open>
+                <summary>Questions</summary>
+                <ul>
+                  {categories.map((category) => (
+                    <li key={category.key}>
+                      <a
+                        className={`block p-2 rounded ${
+                          activeTab === category.name ? "bg-primary text-white" : "hover:bg-base-300"
+                        }`}
+                        onClick={() => setActiveTab(category.name)}
+                      >
+                        {category.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+            <li key={resultsKey}>
+              <a
+                className={`block p-2 rounded ${
+                  activeTab === "Results" ? "bg-primary text-white" : "hover:bg-base-300"
+                }`}
+                onClick={() => setActiveTab("Results")}
+              >
+                Results
+              </a>
+            </li>
+            {state.assessmentInfo.status !== "In Progress" && 
+              <li key={peerFeedbackKey}>
                 <a
                   className={`block p-2 rounded ${
-                    activeTab === category.name ? "bg-primary text-white" : "hover:bg-base-300"
+                    activeTab === "Peer Feedback" ? "bg-primary text-white" : "hover:bg-base-300"
                   }`}
-                  onClick={() => setActiveTab(category.name)}
+                  onClick={() => setActiveTab("Peer Feedback")}
                 >
-                  {category.name}
+                  Peer Feedback
                 </a>
               </li>
-            ))}
+            }
           </ul>
         </div>
 
