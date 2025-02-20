@@ -8,7 +8,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import LoadingOverlay from "./LoadingOverlay";
 import ScrollIndicator from "./ScrollIndicator";
-
 import {
   BriefcaseIcon,
   CalendarIcon,
@@ -16,6 +15,7 @@ import {
   CurrencyDollarIcon,
   MapPinIcon,
 } from '@heroicons/react/20/solid';
+import FeedbackForm from "./FeedbackForm";
 
 const Assessment = () => {
   const { state, dispatch } = useUser();
@@ -217,7 +217,13 @@ const Assessment = () => {
 
         {/* Right-side content */}
         <div className="flex-1 p-6 overflow-auto" ref={contentRef}>
-          {activeTab === "Results" ? <Results /> : <Category categoryName={activeTab} />}
+        {activeTab === "Results" ? (
+            <Results />
+        ) : activeTab === "Peer Feedback" ? (
+            <FeedbackForm />
+        ) : (
+            <Category categoryName={activeTab} />
+        )}
           <ScrollIndicator targetRef={contentRef} />
         </div>
       </div>

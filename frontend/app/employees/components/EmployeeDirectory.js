@@ -15,7 +15,7 @@ const EmployeeDirectory = () => {
   useEffect(() => {
     dispatch({
       type: "SET_USER_INFO",
-      payload: { userId: 5, role: "Software Engineer", individualContributor: false },
+      payload: { userId: 1, role: "Software Engineer", individualContributor: false },
     });
   }, [dispatch]);
 
