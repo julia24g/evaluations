@@ -12,56 +12,59 @@ const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } 
 // Peer feedback creation
 router.post("/", upload.single("file"), async (req, res) => {
     try {
-        const { assessmentId, peerName, feedbackText } = req.body;
-
-        if (!assessmentId) {
-            return res.status(400).json({ message: "Assessment ID is required" });
-        }
-
-        let imageId = null;
-
-        if (req.file) {
-            const { mimetype, buffer } = req.file;
-            const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-            const imageQuery = `
-                INSERT INTO images (name, data, mimetype) 
-                VALUES ($1, $2, $3) RETURNING imageId;
-            `;
-            const imageResult = await pool.query(imageQuery, [uniqueFileName, buffer, mimetype]);
-            imageId = imageResult.rows[0].imageid;
-            console.log(imageId);
-        }
-
-        const feedbackQuery = `
-            INSERT INTO peerFeedback (assessmentId, peerName, feedbackText, imageId)
-            VALUES ($1, $2, $3, $4) RETURNING id;
+      const { assessmentId, peerName, feedbackText } = req.body;
+  
+      if (!assessmentId) {
+        return res.status(400).json({ message: "Assessment ID is required" });
+      }
+  
+      let image = null;
+  
+      if (req.file) {
+        const { mimetype, buffer } = req.file;
+        const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+        const imageQuery = `
+          INSERT INTO images (name, data, mimetype) 
+          VALUES ($1, $2, $3) RETURNING imageId, data, mimetype;
         `;
-        const feedbackResult = await pool.query(feedbackQuery, [
-            assessmentId,
-            peerName || null,
-            feedbackText || null, 
-            imageId
+        const imageResult = await pool.query(imageQuery, [
+          uniqueFileName,
+          buffer,
+          mimetype
         ]);
-
-        res.status(201).json({
-            message: "Peer feedback created",
-            feedbackId: feedbackResult.rows[0].id,
-            ...(imageId && { imageId })
-        });
-
+        image = imageResult.rows[0];
+      }
+  
+      const feedbackQuery = `
+        INSERT INTO peerFeedback (assessmentId, peerName, feedbackText, imageId)
+        VALUES ($1, $2, $3, $4) RETURNING id;
+      `;
+      const feedbackResult = await pool.query(feedbackQuery, [
+        assessmentId,
+        peerName || null,
+        feedbackText || null,
+        image ? image.imageid : null
+      ]);
+  
+      res.status(201).json({
+        feedbackId: feedbackResult.rows[0].id,
+        assessmentId,
+        peerName,
+        feedbackText,
+        image
+      });
     } catch (error) {
-        console.error("Error uploading file and saving feedback:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+      console.error("Error uploading file and saving feedback:", error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-});
+  });  
 
 
 // Peer Feedback Retrieval
 router.get('/:assessId', async (req, res) => {
     try {
         const { assessId } = req.params;
-        console.log(assessId);
         const query = `
             SELECT p.id AS feedbackId, p.assessmentId, p.peerName, p.feedbackText, 
                    i.imageId, i.mimetype, i.data

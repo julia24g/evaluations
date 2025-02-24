@@ -84,16 +84,13 @@ const Assessment = () => {
     }
   }, [state.questionsArray]);
 
-  console.log(state.questionsArray)
-  console.log(state.questionsMapping)
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/form/${state.assessmentInfo.id}`
         );
-        const answers = res.data.assessmentAnswers;
+        const answers = res.data[0].assessmentanswers;
 
         if (answers) {
           dispatch({ type: "SET_ANSWERS", payload: answers });

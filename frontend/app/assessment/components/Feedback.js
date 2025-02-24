@@ -10,13 +10,10 @@ const Feedback = () => {
     const [feedbackList, setFeedbackList] = useState([]);
     const [error, setError] = useState("");
 
-    console.log(state.assessmentInfo.status);
-
     useEffect(() => {
         const getFeedback = async () => {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback/${state.assessmentInfo.id}`);
-                console.log("here")
                 setFeedbackList(response.data);
             } catch (error) {
                 console.error("Error retrieving feedback:", error);
@@ -27,8 +24,6 @@ const Feedback = () => {
         getFeedback();
     }, [state.assessmentInfo.id]);
 
-    console.log(state.assessmentInfo.id);
-
     const onDelete = async (feedbackId) => {
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback/${feedbackId}`);
@@ -38,6 +33,51 @@ const Feedback = () => {
             setError(error.response?.data?.message || "An error occurred");
         }
     };
+
+    const onSubmit = async ({ peerName, feedbackText, file }) => {
+        const tempId = `temp-${Date.now()}`;
+        const newFeedback = {
+            feedbackid: tempId,
+            assessmentid: state.assessmentInfo.id,
+            peername: peerName,
+            feedbacktext: feedbackText,
+            image: file
+              ? { 
+                  data: preview ? preview.split(",")[1] : null, 
+                  mimetype: file.type 
+                }
+              : null
+          };
+      
+        setFeedbackList((prev) => [...prev, newFeedback]);
+
+        const formData = new FormData();
+        formData.append("peerName", peerName);
+        formData.append("feedbackText", feedbackText);
+        formData.append("assessmentId", state.assessmentInfo.id);
+        if (file) {
+          formData.append("file", file);
+        }
+
+        try {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback/`, 
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" }}
+          );
+          console.log("Upload successful:", response.data);
+          setFeedbackList((prev) =>
+            prev.map((feedback) =>
+              feedback.feedbackid === tempId ? response.data : feedback
+            )
+          );
+        } catch (error) {
+        setFeedbackList((prev) =>
+            prev.filter((feedback) => feedback.feedbackId !== tempId)
+            );
+          console.error("Error submitting feedback:", error);
+          setError(error.response?.data?.message || "An error occurred");
+        }
+      }
     
     return (
         <div className="p-4">
@@ -57,7 +97,7 @@ const Feedback = () => {
 
             {state.assessmentInfo.status !== 'Complete' &&
                 <div className="mt-6">
-                    <FeedbackForm />
+                    <FeedbackForm handleSubmit={onSubmit} />
                 </div>
             }
         </div>

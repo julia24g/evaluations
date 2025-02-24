@@ -81,9 +81,6 @@ const Home = ({ currentUserId }) => {
     getEmployeeInfo();
   }, [])
 
-  console.log(state.questionsArray)
-  console.log(state.mapping);
-
   const createAndOpenAssessment = async (level) => {
     if (!currentUserId) return;
     try {

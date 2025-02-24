@@ -4,42 +4,25 @@ import { PhotoIcon } from '@heroicons/react/24/solid';
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 
-const FeedbackForm = () => {
+const FeedbackForm = ({ handleSubmit }) => {
   const [peerName, setPeerName] = useState("");
   const [feedbackText, setFeedbackText] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const { state } = useUser();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append("peerName", peerName);
-    formData.append("feedbackText", feedbackText);
-    formData.append("assessmentId", state.assessmentInfo.id);
-
-    if (file) {
-      formData.append("file", file);
-    }
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback/`, 
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" }}
-      );
-      console.log("Upload successful:", response.data);
-    } catch (error) {
-      console.error("Error submitting feedback:", error);
-      setError(error.response?.data?.message || "An error occurred");
-    }
+  const onFormSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit({ peerName, feedbackText, file });
     clearData();
-  }
+  };
 
   const clearData = () => {
-      setPeerName("");
-      setFeedbackText("");
-      setFile(null);
-      setPreview(null);
-  }
+    setPeerName("");
+    setFeedbackText("");
+    setFile(null);
+    setPreview(null);
+}
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -60,7 +43,7 @@ const FeedbackForm = () => {
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-200">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Enter Feedback</h2>
-      <form>
+      <form onSubmit={onFormSubmit}>
         <div className="space-y-6">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-900">
@@ -137,7 +120,6 @@ const FeedbackForm = () => {
           <button
             type="submit"
             className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2"
-            onClick={handleSubmit}
           >
             Submit
           </button>
