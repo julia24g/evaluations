@@ -11,18 +11,23 @@ const Category = ({ categoryName }) => {
     <div className="flex-grow-1 p-3">
 
       <TabGroup>
-        <TabList className="flex space-x-1 rounded-lg bg-gray-100 p-1">
-          {tabNames.map((tab) => (
-            <Tab key={tab} className={({ selected }) => 
-              clsx(
-                "w-full py-2 text-sm font-medium leading-5 text-gray-700 rounded-lg",
-                selected ? "bg-white shadow" : "hover:bg-gray-200"
-              )
-            }>
-              {tab}
-            </Tab>
-          ))}
-        </TabList>
+        <TabList className="flex border-b border-gray-300">
+            {tabNames.map((tab) => (
+              <Tab
+                key={tab}
+                className={({ selected }) =>
+                  clsx(
+                    "w-1/2 py-2 px-4 text-sm font-medium text-gray-700 border-b-2 transition",
+                    selected
+                      ? "border-indigo-600 text-indigo-600"
+                      : "border-transparent hover:border-gray-300 hover:text-gray-900"
+                  )
+                }
+              >
+                {tab}
+              </Tab>
+            ))}
+          </TabList>
 
         <TabPanels className="mt-4">
           <TabPanel>

@@ -13,12 +13,12 @@ const DisplayedComments = ({ questionKey }) => {
   });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const storedValue = localStorage.getItem("presentationEnabled") !== "true";
-      setEditMode(storedValue);
-    }, 500);
+    const handleStorageChange = () => {
+      setEditMode(localStorage.getItem("presentationEnabled") !== "true");
+    };
 
-    return () => clearInterval(interval);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const DisplayedComments = ({ questionKey }) => {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/comments/${state.assessmentInfo.id}/${questionKey}`
         );
-        setComments(response.data);
+        setComments(response.data || []);
       } catch (error) {
         console.error("Error fetching comments:", error);
         setError(error.response?.data?.message || "An error occurred");
@@ -38,7 +38,7 @@ const DisplayedComments = ({ questionKey }) => {
     };
 
     fetchComments();
-  }, [state.userInfo.userId, state.assessmentInfo.id, questionKey]);
+  }, [state.assessmentInfo.id, questionKey]);
 
   useEffect(() => {
     const storedValue = localStorage.getItem("presentationEnabled");
@@ -65,14 +65,19 @@ const DisplayedComments = ({ questionKey }) => {
   const handleNewComment = async (commentText) => {
     if (!state.userInfo.userId || commentText.trim() === "") return;
 
+    const tempCommentId = `temp-${Date.now()}`;
+
     // Create a temporary optimistic comment
     const newComment = {
-      commentid: -1,
+      assessmentid: state.assessmentInfo.id,
+      commentid: tempCommentId,
+      date: null,
+      questionid: questionKey,
       userid: state.userInfo.userId,
       commenttext: commentText,
     };
 
-    setComments((prev) => [newComment, ...prev]);
+    setComments((prev) => [...prev, newComment]);
 
     try {
       const response = await axios.post(
@@ -82,7 +87,6 @@ const DisplayedComments = ({ questionKey }) => {
           commentText,
         }
       );
-
       setComments((prev) =>
         prev.map((c) => (c.commentid === newComment.commentid ? response.data : c))
       );
@@ -96,16 +100,16 @@ const DisplayedComments = ({ questionKey }) => {
 
   return (
     <div>
-      <h3 className="text-base/7 font-semibold text-gray-900">Comments</h3>
-      {comments.map((comment) => (
+      {comments.length > 0 && <h3 className="text-base/7 font-semibold text-gray-900">Comments</h3>}
+      {comments.length > 0 && (comments.map(({ commentid, userid, commenttext }) => (
         <SingleComment
-          key={comment.commentid}
-          commentId={comment.commentid}
-          userId={comment.userid}
-          text={comment.commenttext}
+          key={commentid || `temp-${Math.random()}`}
+          commentId={commentid}
+          userId={userid}
+          text={commenttext}
           onDelete={handleDelete}
         />
-      ))}
+      )))}
       {editMode && <CommentBox questionKey={questionKey} onNewComment={handleNewComment} />}
     </div>
   );

@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import DropDownAnswer from "./DropDownAnswer";
-import HiddenComments from "./HiddenComments";
 import { useUser } from '../../context/UserContext';
 import DisplayedComments from "./DisplayedComments";
 
@@ -33,10 +32,9 @@ const SingleQuestion = ({ questionKey, text, level, relatedPEOCapabilities = "",
         {/* Dropdown & Comments Section */}
         <div className="flex items-center gap-4 sm:gap-6 ml-auto">
           <DropDownAnswer questionKey={questionKey} />
-          {state.assessmentInfo.status === "In Progress" && <HiddenComments key={questionKey} questionKey={questionKey} />}
         </div>
       </div>
-      {state.assessmentInfo.status !== "In Progress" && <DisplayedComments key={questionKey} questionKey={questionKey} />}
+      <DisplayedComments questionKey={questionKey} />
     </li>
   );
 };

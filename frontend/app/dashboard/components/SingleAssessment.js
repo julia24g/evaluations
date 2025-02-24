@@ -14,7 +14,15 @@ const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, da
   const router = useRouter();
 
   const openAssessment = () => {
-    dispatch({ type: "SET_ASSESSMENT_INFO", payload: {"id": assessmentId, "status": status}});
+    dispatch({ type: "SET_ASSESSMENT_INFO", 
+      payload: {
+        "id": assessmentId, 
+        "status": status, 
+        "firstname": firstname,
+        "lastname": lastname,
+        "date": formatDate(date),
+        "level": level
+      }});
     router.push(`/assessment`);
   }
 

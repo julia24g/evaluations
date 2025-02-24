@@ -1,8 +1,9 @@
 "use client"; // Required for client-side React hooks
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "../../context/UserContext";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,33 +11,45 @@ const Login = () => {
   const router = useRouter();
   const { dispatch } = useUser();
 
+  useEffect(() => {
+    dispatch({ type: "LOGOUT"})
+  }, [])
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     try {
-      if (email === "111@111.com" && password === "111") {
-        const response = {
-          data: {
-            userInfo: {
-              userId: 1,
-              role: "Software Engineer",
-              individualContributor: true
-            },
-            assessmentAnswers: {}
-          },
-        };
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
+        email: email, 
+        password: password
+      });
+  
+      if (response.data.user) {
+        dispatch({ 
+          type: "SET_USER_INFO", 
+          payload: {
+            userId: response.data.user.userid, 
+            individualContributor: response.data.user.individualcontributor, 
+            role: response.data.user.role
+          }
+        });
 
-        dispatch({ type: "SET_ANSWERS", payload: response.data.assessmentAnswers || {} });
-        dispatch({ type: "SET_USER_INFO", payload: response.data.userInfo });
+        router.push(`/dashboard?userId=${response.data.user.userid}`);
 
-        router.push("/dashboard");
       } else {
         alert("Invalid credentials! Try again.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login.");
+      
+      if (error.response && error.response.data.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("An error occurred during login.");
+      }
     }
   };
+  
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

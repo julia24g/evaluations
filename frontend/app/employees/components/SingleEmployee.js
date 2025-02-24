@@ -9,8 +9,13 @@ const SingleEmployee = ({ userid, firstname, lastname, managerfirstname, manager
   const { dispatch } = useUser();
 
   const openEmployee = () => {
-    dispatch({ type: "SET_ASSESSMENT_INFO", payload: {"id": assessmentId, "status": status}});
-    router.push(`/assessment`);
+      dispatch({ 
+        type: "SET_EMPLOYEE_INFO", 
+        payload: {
+          userId: userid
+        }
+      });
+    router.push(`/dashboard?userId=${userid}`);
   }
 
   return (
@@ -27,7 +32,9 @@ const SingleEmployee = ({ userid, firstname, lastname, managerfirstname, manager
 
       {/* Right Section: Actions */}
       <div className="flex items-center gap-x-3">
-        <button className="btn btn-sm">
+        <button 
+        className="btn btn-sm"
+        onClick={openEmployee}>
           View Evaluations
         </button>
       </div>

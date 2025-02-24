@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
-import FeedbackCard from './FeedbackCard';
 
 const FeedbackForm = () => {
   const [peerName, setPeerName] = useState("");
@@ -60,11 +59,9 @@ const FeedbackForm = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-200">
-      <FeedbackCard />
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Enter Feedback</h2>
       <form>
         <div className="space-y-6">
-          {/* Name Input */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-900">
               Peer Name

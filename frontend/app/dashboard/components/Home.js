@@ -8,7 +8,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import NavBar from '../../utils/NavBar';
 
-const Home = () => {
+const Home = ({ currentUserId }) => {
   const { state, dispatch } = useUser();
   const router = useRouter();
   const [assessments, setAssessments] = useState([]);
@@ -17,24 +17,24 @@ const Home = () => {
   const [inProgressAssmts, setInProgressAssmts] = useState([]);
   const [inReviewAssmts, setInReviewAssmts] = useState([]);
   const [completeAssmts, setCompleteAssmts] = useState([]);
-  
-  const [isMounted, setIsMounted] = useState(false);
-  
-  useEffect(() => {
-    setIsMounted(true);
-    dispatch({
-      type: "SET_USER_INFO",
-      payload: { userId: 1, role: "Software Engineer", individualContributor: false },
-    });
-  }, [dispatch]);
+  const [employeeInfo, setEmployeeInfo] = useState("");
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+  
   useEffect(() => {
     const fetchAssessments = async () => {
-      if (!state.userInfo?.userId) return;
+      if (!currentUserId) return;
       setLoading(true);
       try {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, {
-          params: { userId: state.userInfo.userId },
+          params: { userId: currentUserId },
         });
         setAssessments(data);
       } catch (error) {
@@ -44,7 +44,7 @@ const Home = () => {
       }
     };
     fetchAssessments();
-  }, [state.userInfo?.userId]);
+  }, []);
 
   useEffect(() => {
     dispatch({
@@ -67,69 +67,40 @@ const Home = () => {
   }, [assessments]);
 
   useEffect(() => {
-    if (state.userInfo.role) {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`, { params: { role: state.userInfo.role } })
-        .then((response) => {
-          const questions = response.data;
-          
-          dispatch({ type: "SET_QUESTIONS_ARRAY", payload: questions });
+    const getEmployeeInfo = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/employees/info/${currentUserId}`);
+        setEmployeeInfo(response.data[0]);
+      }
+      catch {
+        console.error("Error retrieving user info:", error);
+        setError(error.response?.data?.message || "An error occurred");
+      }
 
-          const categories = Array.from(
-            new Set(
-              questions
-                .map((question) => question.category)
-            )
-          ).map((category, index) => ({ key: index, name: category }));
-
-          dispatch({ type: "SET_CATEGORIES", payload: categories || [] })
-
-          const questionsMapping = questions.reduce((acc, question) => {
-            acc[question.questionid] = question;
-            return acc;
-          }, {});
-          dispatch({ type: "SET_QUESTIONS_MAPPING", payload: questionsMapping });
-
-        })
-        .catch((error) => {
-          console.error("Error fetching evaluations:", error);
-          setError(error.response?.data?.message || "An error occurred");
-        })
     }
-  }, [state.userInfo.role]);
+    getEmployeeInfo();
+  }, [])
 
-  useEffect(() => {
-    if (state.questionsArray.length > 0) {
-      const tempResultStore = {};
-  
-      state.questionsArray.forEach((question) => {
-        const { category, level } = question;
-          if (!tempResultStore[category]) {
-          tempResultStore[category] = {};
-        }
-          if (!tempResultStore[category][level]) {
-          tempResultStore[category][level] = { count: 0, total: 0 };
-        }
-        if (!tempResultStore[category]["category"]) {
-          tempResultStore[category]["category"] = { count: 0, total: 0 };
-        }
-  
-        tempResultStore[category][level].count += 1;
-        tempResultStore[category]["category"].count += 1;
-      });
-  
-      dispatch({ type: "SET_RESULTSTORE", payload: tempResultStore });
-    }
-  }, [state.questionsArray]);
+  console.log(state.questionsArray)
+  console.log(state.mapping);
 
   const createAndOpenAssessment = async (level) => {
-    if (!state.userInfo?.userId) return;
+    if (!currentUserId) return;
     try {
       const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments`, {
-        userId: state.userInfo.userId,
+        userId: currentUserId,
         level: level,
       });
-      dispatch({ type: "SET_ASSESSMENT_INFO", payload: { "id": data.assessmentid, "status": "In Progress" }});
+      dispatch({ type: "SET_ASSESSMENT_INFO", 
+        payload: { 
+          "id": data.assessmentid, 
+          "status": "In Progress",
+          "firstname": employeeInfo.firstname,
+          "lastname": employeeInfo.lastname,
+          "level": level,
+          "date":  formatDate(Date()),
+          "role": employeeInfo.role
+        }});
       router.push(`/assessment`);
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred");
@@ -191,12 +162,16 @@ const Home = () => {
 
   return (
     <>
-    <NavBar individualContributor={state.userInfo.individualContributor}/>
+    <NavBar/>
       <div className="p-6 max-w-3xl mx-auto">
-        <h1 className="font-semibold text-gray-900 sm:text-5xl">Performance Evaluations</h1>
+        <h1 className="font-semibold text-gray-900 sm:text-5xl">
+          {employeeInfo.individualcontributor
+            ? `${employeeInfo.firstname} ${employeeInfo.lastname}'s Performance Evaluations`
+            : "Performance Evaluations"}
+        </h1>
         <p className="mt-2 text-gray-600">This is an app for PCC performance evaluations.</p>
 
-        {isMounted && state.userInfo?.individualContributor && (
+        {state.userInfo?.individualContributor && (
           <Menu as="div" className="relative inline-block text-left mt-4">
             <div>
               <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50">

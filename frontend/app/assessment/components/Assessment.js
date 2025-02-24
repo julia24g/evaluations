@@ -9,28 +9,87 @@ import { useRouter } from "next/navigation";
 import LoadingOverlay from "./LoadingOverlay";
 import ScrollIndicator from "./ScrollIndicator";
 import {
-  BriefcaseIcon,
   CalendarIcon,
   CheckIcon,
-  CurrencyDollarIcon,
-  MapPinIcon,
+  UserIcon
 } from '@heroicons/react/20/solid';
-import FeedbackForm from "./FeedbackForm";
+import Feedback from "./Feedback";
 
 const Assessment = () => {
   const { state, dispatch } = useUser();
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const contentRef = useRef(null);
-  const activeSubmitButton = state.assessmentInfo.status !== "Complete";
+  const activeSubmitButton = state.assessmentInfo?.status !== "Complete";
   const [presentationEnabled, setPresentationEnabled] = useState(false);
+
+  if (!state.assessmentInfo){
+    return <LoadingOverlay />
+  }
 
   const categories = state.categories || [];
 
   useEffect(() => {
+    if (state.assessmentInfo.role) {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`, { params: { role: state.assessmentInfo.role } })
+        .then((response) => {
+          const questions = response.data;
+          
+          dispatch({ type: "SET_QUESTIONS_ARRAY", payload: questions });
+
+          const categories = Array.from(
+            new Set(
+              questions
+                .map((question) => question.category)
+            )
+          ).map((category, index) => ({ key: index, name: category }));
+
+          dispatch({ type: "SET_CATEGORIES", payload: categories || [] })
+
+          const questionsMapping = questions.reduce((acc, question) => {
+            acc[question.questionid] = question;
+            return acc;
+          }, {});
+          dispatch({ type: "SET_QUESTIONS_MAPPING", payload: questionsMapping });
+
+        })
+        .catch((error) => {
+          console.error("Error fetching evaluations:", error);
+          setError(error.response?.data?.message || "An error occurred");
+        })
+    }
+  }, [state.assessmentInfo.role]);
+
+  useEffect(() => {
+    if (state.questionsArray.length > 0) {
+      const tempResultStore = {};
+  
+      state.questionsArray.forEach((question) => {
+        const { category, level } = question;
+          if (!tempResultStore[category]) {
+          tempResultStore[category] = {};
+        }
+          if (!tempResultStore[category][level]) {
+          tempResultStore[category][level] = { count: 0, total: 0 };
+        }
+        if (!tempResultStore[category]["category"]) {
+          tempResultStore[category]["category"] = { count: 0, total: 0 };
+        }
+  
+        tempResultStore[category][level].count += 1;
+        tempResultStore[category]["category"].count += 1;
+      });
+  
+      dispatch({ type: "SET_RESULTSTORE", payload: tempResultStore });
+    }
+  }, [state.questionsArray]);
+
+  console.log(state.questionsArray)
+  console.log(state.questionsMapping)
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/form/${state.assessmentInfo.id}`
         );
@@ -39,7 +98,6 @@ const Assessment = () => {
         if (answers) {
           dispatch({ type: "SET_ANSWERS", payload: answers });
         }
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching assessment data:", err);
         setError(err.response?.data?.message || "An error occurred");
@@ -48,11 +106,11 @@ const Assessment = () => {
 
     fetchData();
     
-  }, [state.assessmentInfo.id, dispatch]);
+  }, [state.assessmentInfo?.id, dispatch]);
 
   const handleSave = async () => {
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentInfo.id}`, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentInfo?.id}`, {
         assessmentAnswers: state.answers,
       });
     } catch (error) {
@@ -62,27 +120,30 @@ const Assessment = () => {
   }
 
   const handleSubmit = async () => {
-    setLoading(true);
     try {
-      if (state.assessmentInfo.status === "In Progress") {
+      if (state.assessmentInfo?.status === "In Progress") {
         await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/review/${state.assessmentInfo.id}`)
       }
       else {
         await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/complete/${state.assessmentInfo.id}`)
       }
-      router.push("/dashboard");
+      router.push(`/dashboard?userId=${state.userInfo.userId}`);
+      
     }
     catch (error) {
       console.error("Error updating assessment answers:", error);
       setError(error.response?.data?.message || "An error occurred");
-      setLoading(false);
     }
-    setLoading(false);
   }
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPresentationEnabled(JSON.parse(localStorage.getItem("presentationEnabled") || "false"));
+    }
+  }, []);
+  
   const onToggle = () => {
-    const currentValue = JSON.parse(localStorage.getItem("presentationEnabled") || "false");
-    const newValue = !currentValue;
+    const newValue = !presentationEnabled;
     setPresentationEnabled(newValue);
     localStorage.setItem("presentationEnabled", JSON.stringify(newValue));
   };
@@ -91,7 +152,7 @@ const Assessment = () => {
   const resultsKey = categories.length;
   const peerFeedbackKey = categories.length + 1;
 
-  const [activeTab, setActiveTab] = useState(categories[0].name);
+  const [activeTab, setActiveTab] = useState(categories[0]?.name);
 
   return (
     <>
@@ -99,28 +160,20 @@ const Assessment = () => {
       <div className="lg:flex lg:items-center lg:justify-between p-6">
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            {state.assessmentInfo?.title || "Performance Assessment"}
+            {state.assessmentInfo?.level || ""} Performance Assessment
           </h2>
           <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
             <div className="mt-2 flex items-center text-sm text-gray-500">
-              <BriefcaseIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
-              {state.assessmentInfo?.role || "N/A"}
-            </div>
-            <div className="mt-2 flex items-center text-sm text-gray-500">
-              <MapPinIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
-              Remote
-            </div>
-            <div className="mt-2 flex items-center text-sm text-gray-500">
-              <CurrencyDollarIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
-              {state.assessmentInfo?.salaryRange || "$120k - $140k"}
+              <UserIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
+              {state.assessmentInfo?.firstname} {state.assessmentInfo?.lastname}
             </div>
             <div className="mt-2 flex items-center text-sm text-gray-500">
               <CalendarIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
-              Closing on {state.assessmentInfo?.closingDate || "N/A"}
+              {state.assessmentInfo?.date || "N/A"}
             </div>
           </div>
         </div>
-        {state.assessmentInfo.status === 'In Review' && 
+        {state.assessmentInfo?.status === 'In Review' && 
               <div className="flex items-center gap-3">
                 {/* Label */}
                 <span className="text-sm font-medium text-gray-700">Presentation Mode</span>
@@ -158,7 +211,7 @@ const Assessment = () => {
               onClick={handleSubmit}
             >
               <CheckIcon aria-hidden="true" className="mr-1.5 -ml-0.5 size-5" />
-              {state.assessmentInfo.status === "In Progress" ? "Submit For Review" : "Complete"}
+              {state.assessmentInfo?.status === "In Progress" ? "Submit For Review" : "Complete"}
             </button>
             </span>
           </div>
@@ -167,7 +220,6 @@ const Assessment = () => {
 
       {/* ✅ Main Assessment Content */}
       <div className="flex h-screen">
-        {loading && <LoadingOverlay />}
         {/* Sidebar menu */}
         <div className="w-60 bg-base-200 p-4 overflow-y-auto">
           <ul className="menu rounded-box">
@@ -200,7 +252,7 @@ const Assessment = () => {
                 Results
               </a>
             </li>
-            {state.assessmentInfo.status !== "In Progress" && 
+            {state.assessmentInfo?.status !== "In Progress" && 
               <li key={peerFeedbackKey}>
                 <a
                   className={`block p-2 rounded ${
@@ -220,7 +272,7 @@ const Assessment = () => {
         {activeTab === "Results" ? (
             <Results />
         ) : activeTab === "Peer Feedback" ? (
-            <FeedbackForm />
+            <Feedback />
         ) : (
             <Category categoryName={activeTab} />
         )}

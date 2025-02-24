@@ -1,6 +1,5 @@
 "use client";
-import React, { createContext, useReducer, useContext, useEffect } from "react";
-
+import React, { createContext, useReducer, useContext, useEffect, useState } from "react";
 
 const initialState = {
   userInfo: {},
@@ -16,15 +15,15 @@ const safeParse = (key, fallback) => {
   if (typeof window === "undefined") {
     return fallback;
   }
-  
   try {
     const item = localStorage.getItem(key);
-    return item && item !== "undefined" ? JSON.parse(item) : fallback;
+    return item && item !== "undefined" && item !== "null" ? JSON.parse(item) : fallback;
   } catch (error) {
     console.error(`Error parsing localStorage key "${key}":`, error);
     return fallback;
   }
 };
+
 
 
 const storedState = {
@@ -40,9 +39,18 @@ const userReducer = (state, action) => {
   let newState = state;
 
   switch (action.type) {
+    case "HYDRATE_STATE":
+      return { ...state, ...action.payload };
     case "SET_USER_INFO":
       newState = { ...state, userInfo: action.payload || {} };
       localStorage.setItem("userInfo", JSON.stringify(action.payload));
+      break;
+    case "SET_EMPLOYEE_INFO":
+      newState = { ...state, employeeInfo: action.payload || {} };
+      localStorage.setItem("employeeInfo", JSON.stringify(action.payload));
+    case "CLEAR_EMPLOYEE_INFO":
+      newState = { ...state, employeeInfo: {} };
+      localStorage.removeItem("employeeInfo");
       break;
     case "SET_ASSESSMENT_INFO":
       newState = { ...state, assessmentInfo: action.payload || {} };
@@ -86,6 +94,7 @@ const userReducer = (state, action) => {
       break;
     case "LOGOUT":
       localStorage.removeItem("userInfo");
+      localStorage.removeItem("employeeInfo");
       localStorage.removeItem("assessmentInfo");
       localStorage.removeItem("answers");
       localStorage.removeItem("resultStore");
@@ -101,20 +110,40 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, storedState);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
-    localStorage.setItem("assessmentInfo", JSON.stringify(state.assessmentInfo));
-    localStorage.setItem("questionsArray", JSON.stringify(state.questionsArray));
-    localStorage.setItem("questionsMapping", JSON.stringify(state.questionsMapping));
-    localStorage.setItem("answers", JSON.stringify(state.answers));
-    localStorage.setItem("categories", JSON.stringify(state.categories));
-    localStorage.setItem("resultStore", JSON.stringify(state.resultStore));
-  }, [state]);
+    const storedState = {
+      userInfo: safeParse("userInfo", {}),
+      employeeInfo: safeParse("employeeInfo", {}),
+      assessmentInfo: safeParse("assessmentInfo", {}),
+      questionsArray: safeParse("questionsArray", []),
+      questionsMapping: safeParse("questionsMapping", {}),
+      answers: safeParse("answers", {}),
+      categories: safeParse("categories", []),
+      resultStore: safeParse("resultStore", {}),
+    };
+
+    dispatch({ type: "HYDRATE_STATE", payload: storedState });
+    setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem("userInfo", JSON.stringify(state.userInfo));
+      localStorage.setItem("employeeInfo", JSON.stringify(state.employeeInfo));
+      localStorage.setItem("assessmentInfo", JSON.stringify(state.assessmentInfo));
+      localStorage.setItem("questionsArray", JSON.stringify(state.questionsArray));
+      localStorage.setItem("questionsMapping", JSON.stringify(state.questionsMapping));
+      localStorage.setItem("answers", JSON.stringify(state.answers));
+      localStorage.setItem("categories", JSON.stringify(state.categories));
+      localStorage.setItem("resultStore", JSON.stringify(state.resultStore));
+    }
+  }, [state, isHydrated]);
 
   return (
     <UserContext.Provider value={{ state, dispatch }}>
-      {children}
+      {isHydrated ? children : null}
     </UserContext.Provider>
   );
 };

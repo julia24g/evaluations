@@ -26,10 +26,14 @@ router.post('/:assessmentId/:questionId', async (req, res) => {
         const { assessmentId, questionId } = req.params;
         const { userId, commentText } = req.body;
 
-        const query = `INSERT INTO comment (questionId, assessmentId, userId, commentText) VALUES ($1, $2, $3, $4)`;
-        await pool.query(query, [questionId, assessmentId, userId, commentText]);
+        const query = `
+        INSERT INTO comment (questionId, assessmentId, userId, commentText) 
+        VALUES ($1, $2, $3, $4)
+        RETURNING *;
+        `;
+        const result = await pool.query(query, [questionId, assessmentId, userId, commentText]);
 
-        res.status(201).json({ message: "Comment added successfully" });
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

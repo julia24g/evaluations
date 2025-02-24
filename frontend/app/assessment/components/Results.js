@@ -10,7 +10,8 @@ const Results = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
+    setLoading(state.questionsMapping);
+    console.log(state.resultStore);
     if (!state.answers || !state.questionsMapping || !state.resultStore) return;
 
 

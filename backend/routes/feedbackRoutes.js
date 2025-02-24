@@ -95,5 +95,22 @@ router.get('/:assessId', async (req, res) => {
     }
 });
 
+// Delete peer feedback
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('DELETE FROM peerFeedback WHERE id = $1', [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: 'Feedback not found' });
+        }
+
+        res.json({ message: 'Feedback deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 
 module.exports = router;
