@@ -6,6 +6,10 @@ meta {
 
 post {
   url: {{host}}/api/users/login
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {"email": "julia.groza@pointclickcare.com", "password": "password"}
 }

@@ -10,10 +10,13 @@ const Feedback = () => {
     const [feedbackList, setFeedbackList] = useState([]);
     const [error, setError] = useState("");
 
+    console.log(state.assessmentInfo.status);
+
     useEffect(() => {
         const getFeedback = async () => {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback/${state.assessmentInfo.id}`);
+                console.log("here")
                 setFeedbackList(response.data);
             } catch (error) {
                 console.error("Error retrieving feedback:", error);
@@ -24,7 +27,7 @@ const Feedback = () => {
         getFeedback();
     }, [state.assessmentInfo.id]);
 
-    console.log(feedbackList);
+    console.log(state.assessmentInfo.id);
 
     const onDelete = async (feedbackId) => {
         try {
@@ -52,9 +55,11 @@ const Feedback = () => {
                 ))}
             </div>
 
-            <div className="mt-6">
-                <FeedbackForm />
-            </div>
+            {state.assessmentInfo.status !== 'Complete' &&
+                <div className="mt-6">
+                    <FeedbackForm />
+                </div>
+            }
         </div>
     );
 }

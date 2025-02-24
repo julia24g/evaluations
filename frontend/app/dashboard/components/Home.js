@@ -143,7 +143,7 @@ const Home = ({ currentUserId }) => {
       <>
         <h2 className="text-lg font-semibold mt-6">{title}</h2>
         <ul role="list" className="divide-y divide-gray-100">
-          {assessmentsList.map(({ assessmentid, status, level, firstname, lastname, date }) => (
+          {assessmentsList.map(({ assessmentid, status, level, firstname, lastname, date, role }) => (
             <SingleAssessment
               key={assessmentid}
               assessmentId={assessmentid}
@@ -152,6 +152,7 @@ const Home = ({ currentUserId }) => {
               firstname={firstname}
               lastname={lastname}
               date={date}
+              role={role}
               onDelete={handleDeleteAssessment}
             />
           ))}

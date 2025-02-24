@@ -16,14 +16,16 @@ const FeedbackCard = ({ feedbackId, imageData, name, text, onDelete }) => {
 
     return (
         <div className="card bg-base-100 shadow rounded-lg">
-            <figure className="w-full flex">
-                <img
-                    src={`data:${imageData.mimetype};base64,${imageData.data}`}
-                    alt="Feedback Screenshot"
-                    className="object-contain rounded-lg"
-                    style={{ width: imgSize.width, height: imgSize.height }}
-                />
-            </figure>
+            {imageData && 
+                <figure className="w-full flex">
+                    <img
+                        src={`data:${imageData.mimetype};base64,${imageData.data}`}
+                        alt="Feedback Screenshot"
+                        className="object-contain rounded-lg"
+                        style={{ width: imgSize.width, height: imgSize.height }}
+                    />
+                </figure>
+            }      
             <div className="card-body">
                 <h2 className="card-title text-left">{name}</h2>
                 <p className="text-left">{text}</p>

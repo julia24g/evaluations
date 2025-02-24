@@ -42,11 +42,13 @@ const DisplayedComments = ({ questionKey }) => {
 
   useEffect(() => {
     const storedValue = localStorage.getItem("presentationEnabled");
-    const editModeTemp = storedValue ? storedValue !== "true" : true;
-    setEditMode(editModeTemp);
-  }, []);
-  
+    const isPresentationModeDisabled = storedValue ? storedValue !== "true" : true;
+    const isAssessmentEditable = state.assessmentInfo?.status !== "Complete";
 
+    setEditMode(isPresentationModeDisabled && isAssessmentEditable);
+}, [state.assessmentInfo?.status]);
+
+  
   const handleDelete = async (commentId) => {
     if (!commentId) return;
 

@@ -3,28 +3,16 @@ import React from 'react';
 import { useRouter } from "next/navigation";
 import { useUser } from '../../context/UserContext';
 
-const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, date, onDelete }) => {
+const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, date, role, onDelete }) => {
 
   const { state, dispatch } = useUser()
-  const openButtonActivated = state.userInfo.individualContributor === false 
+  const openButtonActivated = (state.userInfo.individualContributor === false && 
+    (status === 'In Review' || status === 'Complete')) 
   || (state.userInfo.individualContributor === true && status === 'In Progress')
   const deleteButtonActivated = (state.userInfo.individualContributor === true && status === 'In Progress')
   || (state.userInfo.individualContributor === false && status === 'In Review')
   
   const router = useRouter();
-
-  const openAssessment = () => {
-    dispatch({ type: "SET_ASSESSMENT_INFO", 
-      payload: {
-        "id": assessmentId, 
-        "status": status, 
-        "firstname": firstname,
-        "lastname": lastname,
-        "date": formatDate(date),
-        "level": level
-      }});
-    router.push(`/assessment`);
-  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -34,6 +22,20 @@ const SingleAssessment = ({ assessmentId, status, level, firstname, lastname, da
       day: "numeric",
     });
   };
+
+  const openAssessment = () => {
+    dispatch({ type: "SET_ASSESSMENT_INFO", 
+      payload: { 
+        "id": assessmentId, 
+        "status": status,
+        "firstname": firstname,
+        "lastname": lastname,
+        "level": level,
+        "date":  formatDate(date),
+        "role": role
+      }});
+    router.push(`/assessment`);
+  }
 
   return (
     <li key={assessmentId} className="flex items-center justify-between gap-x-6 p-4 rounded-lg">
