@@ -21,6 +21,7 @@ const Assessment = () => {
   const contentRef = useRef(null);
   const activeSubmitButton = state.assessmentInfo?.status !== "Complete";
   const [presentationEnabled, setPresentationEnabled] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   if (!state.assessmentInfo){
     return <LoadingOverlay />
@@ -110,6 +111,10 @@ const Assessment = () => {
       await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/assessments/${state.assessmentInfo?.id}`, {
         assessmentAnswers: state.answers,
       });
+      setAlertVisible(true);
+      setTimeout(() => {
+        setAlertVisible(false);
+      }, 3000);
     } catch (error) {
       console.error("Error updating assessment answers:", error);
       setError(error.response?.data?.message || "An error occurred");
@@ -132,20 +137,12 @@ const Assessment = () => {
       setError(error.response?.data?.message || "An error occurred");
     }
   }
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setPresentationEnabled(JSON.parse(localStorage.getItem("presentationEnabled") || "false"));
-    }
-  }, []);
   
   const onToggle = () => {
     const newValue = !presentationEnabled;
     setPresentationEnabled(newValue);
-    localStorage.setItem("presentationEnabled", JSON.stringify(newValue));
   };
   
-
   const resultsKey = categories.length;
   const peerFeedbackKey = categories.length + 1;
 
@@ -170,7 +167,7 @@ const Assessment = () => {
             </div>
           </div>
         </div>
-        {state.assessmentInfo?.status === 'In Review' && 
+        {state.assessmentInfo?.status !== 'Complete' && 
               <div className="flex items-center gap-3">
                 {/* Label */}
                 <span className="text-sm font-medium text-gray-700">Presentation Mode</span>
@@ -184,7 +181,7 @@ const Assessment = () => {
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                      presentationEnabled ? "translate-x-6" : "translate-x-1"
+                      presentationEnabled ? "translate-x-3" : "translate-x-1"
                     }`}
                   />
                 </button>
@@ -271,11 +268,42 @@ const Assessment = () => {
         ) : activeTab === "Peer Feedback" ? (
             <Feedback />
         ) : (
-            <Category categoryName={activeTab} />
+            <Category presentationEnabled={presentationEnabled} categoryName={activeTab} />
         )}
           <ScrollIndicator targetRef={contentRef} />
         </div>
       </div>
+      {alertVisible && (
+        <div className="fixed bottom-0 left-0 w-full z-50">
+          <div className="rounded-none bg-green-50 p-4 shadow-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-green-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-green-800">
+                  Successfully saved!
+                </h3>
+                <div className="mt-2 text-sm text-green-700">
+                  <p>Your changes have been saved.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

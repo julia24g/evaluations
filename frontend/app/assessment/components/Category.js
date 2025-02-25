@@ -4,7 +4,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import Questions from "./Questions";
 import clsx from "clsx";
 
-const Category = ({ categoryName }) => {
+const Category = ({ presentationEnabled, categoryName }) => {
   const tabNames = ["Questions", "Comments"];
 
   return (
@@ -31,7 +31,7 @@ const Category = ({ categoryName }) => {
 
         <TabPanels className="mt-4">
           <TabPanel>
-            <Questions categoryName={categoryName} />
+            <Questions presentationEnabled={presentationEnabled} categoryName={categoryName} />
           </TabPanel>
           <TabPanel>
             <p>Comments section coming soon!</p>

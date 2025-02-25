@@ -12,7 +12,7 @@ const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } 
 // Peer feedback creation
 router.post("/", upload.single("file"), async (req, res) => {
     try {
-      const { assessmentId, peerName, feedbackText } = req.body;
+      const { assessmentId, peerName } = req.body;
   
       if (!assessmentId) {
         return res.status(400).json({ message: "Assessment ID is required" });
@@ -34,16 +34,16 @@ router.post("/", upload.single("file"), async (req, res) => {
           mimetype
         ]);
         image = imageResult.rows[0];
+        image.data = image.data.toString('base64');
       }
   
       const feedbackQuery = `
-        INSERT INTO peerFeedback (assessmentId, peerName, feedbackText, imageId)
-        VALUES ($1, $2, $3, $4) RETURNING id;
+        INSERT INTO peerFeedback (assessmentId, peerName, imageId)
+        VALUES ($1, $2, $3) RETURNING id;
       `;
       const feedbackResult = await pool.query(feedbackQuery, [
         assessmentId,
         peerName || null,
-        feedbackText || null,
         image ? image.imageid : null
       ]);
   
@@ -51,7 +51,6 @@ router.post("/", upload.single("file"), async (req, res) => {
         feedbackId: feedbackResult.rows[0].id,
         assessmentId,
         peerName,
-        feedbackText,
         image
       });
     } catch (error) {
@@ -66,7 +65,7 @@ router.get('/:assessId', async (req, res) => {
     try {
         const { assessId } = req.params;
         const query = `
-            SELECT p.id AS feedbackId, p.assessmentId, p.peerName, p.feedbackText, 
+            SELECT p.id AS feedbackId, p.assessmentId, p.peerName, 
                    i.imageId, i.mimetype, i.data
             FROM peerFeedback p
             LEFT JOIN images i ON p.imageId = i.imageId
@@ -75,15 +74,10 @@ router.get('/:assessId', async (req, res) => {
 
         const result = await pool.query(query, [assessId]);
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "No feedback found for assessment" });
-        }
-
         const feedback = result.rows.map(row => ({
             feedbackId: row.feedbackid,
             assessmentId: row.assessmentid,
             peerName: row.peername,
-            feedbackText: row.feedbacktext,
             image: row.imageid ? {
                 imageId: row.imageid,
                 mimetype: row.mimetype,

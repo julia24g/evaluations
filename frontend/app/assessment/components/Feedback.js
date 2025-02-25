@@ -25,26 +25,31 @@ const Feedback = () => {
     }, [state.assessmentInfo.id]);
 
     const onDelete = async (feedbackId) => {
+        const previousFeedbackList = [...feedbackList];
+        setFeedbackList((prev) =>
+            prev.filter((feedback) => feedback.feedbackId !== feedbackId)
+          );
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback/${feedbackId}`);
-            setFeedbackList((prev) => prev.filter((feedback) => feedback.feedbackId !== feedbackId));
         } catch (error) {
             console.error("Error deleting feedback:", error);
             setError(error.response?.data?.message || "An error occurred");
+            setFeedbackList(previousFeedbackList);
         }
     };
 
-    const onSubmit = async ({ peerName, feedbackText, file }) => {
+    const onSubmit = async ({ peerName, file, preview }) => {
         const tempId = `temp-${Date.now()}`;
+        const base64Data = preview ? preview.split(",")[1] : null;
         const newFeedback = {
             feedbackid: tempId,
             assessmentid: state.assessmentInfo.id,
             peername: peerName,
-            feedbacktext: feedbackText,
             image: file
               ? { 
-                  data: preview ? preview.split(",")[1] : null, 
-                  mimetype: file.type 
+                  imageid: tempId,
+                  mimetype: file.type,
+                  data: base64Data
                 }
               : null
           };
@@ -53,7 +58,6 @@ const Feedback = () => {
 
         const formData = new FormData();
         formData.append("peerName", peerName);
-        formData.append("feedbackText", feedbackText);
         formData.append("assessmentId", state.assessmentInfo.id);
         if (file) {
           formData.append("file", file);
@@ -72,23 +76,23 @@ const Feedback = () => {
           );
         } catch (error) {
         setFeedbackList((prev) =>
-            prev.filter((feedback) => feedback.feedbackId !== tempId)
+            prev.filter((feedback) => feedback.feedbackid !== tempId)
             );
           console.error("Error submitting feedback:", error);
           setError(error.response?.data?.message || "An error occurred");
         }
       }
-    
+
     return (
         <div className="p-4">
             <div className="flex flex-wrap gap-4 justify-start">
-                {feedbackList.map(({ feedbackId, image, peerName, feedbackText }) => (
-                    <div key={feedbackId} className="flex-grow">
+                {feedbackList.map((feedback) => (
+                    <div key={feedback.feedbackid} className="flex-grow">
                         <FeedbackCard 
-                            feedbackId={feedbackId} 
-                            imageData={image} 
-                            name={peerName} 
-                            text={feedbackText} 
+                            key={feedback.feedbackid}
+                            feedbackId={feedback.feedbackId} 
+                            imageData={feedback.image} 
+                            name={feedback.peerName} 
                             onDelete={onDelete} 
                         />
                     </div>

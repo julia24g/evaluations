@@ -5,21 +5,9 @@ import CommentBox from "./CommentBox";
 import { useUser } from "../../context/UserContext";
 import axios from "axios";
 
-const DisplayedComments = ({ questionKey }) => {
+const DisplayedComments = ({ presentationEnabled, questionKey }) => {
   const { state } = useUser();
   const [comments, setComments] = useState([]);
-  const [editMode, setEditMode] = useState(() => {
-    return localStorage.getItem("presentationEnabled") !== "true";
-  });
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setEditMode(localStorage.getItem("presentationEnabled") !== "true");
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -39,15 +27,6 @@ const DisplayedComments = ({ questionKey }) => {
 
     fetchComments();
   }, [state.assessmentInfo.id, questionKey]);
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("presentationEnabled");
-    const isPresentationModeDisabled = storedValue ? storedValue !== "true" : true;
-    const isAssessmentEditable = state.assessmentInfo?.status !== "Complete";
-
-    setEditMode(isPresentationModeDisabled && isAssessmentEditable);
-}, [state.assessmentInfo?.status]);
-
   
   const handleDelete = async (commentId) => {
     if (!commentId) return;
@@ -112,7 +91,7 @@ const DisplayedComments = ({ questionKey }) => {
           onDelete={handleDelete}
         />
       )))}
-      {editMode && <CommentBox questionKey={questionKey} onNewComment={handleNewComment} />}
+      {!presentationEnabled && <CommentBox questionKey={questionKey} onNewComment={handleNewComment} />}
     </div>
   );
 };

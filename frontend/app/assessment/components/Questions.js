@@ -3,7 +3,7 @@ import React from 'react';
 import SingleQuestion from './SingleQuestion';
 import { useUser } from '../../context/UserContext';
 
-const Questions = ({ categoryName }) => {
+const Questions = ({ presentationEnabled, categoryName }) => {
   const { state } = useUser();
   const questionsArray = state.questionsArray;
 
@@ -20,6 +20,7 @@ const Questions = ({ categoryName }) => {
               level={question.level}
               relatedPEOCapabilities={question.relatedpeocapabilities || ""}
               relatedPEOBehaviours={question.relatedpeobehaviours || ""}
+              presentationEnabled={presentationEnabled}
             />
         ))}
       </ul>

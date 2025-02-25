@@ -1,25 +1,20 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid';
-import { useUser } from "../../context/UserContext";
-import axios from "axios";
 
 const FeedbackForm = ({ handleSubmit }) => {
   const [peerName, setPeerName] = useState("");
-  const [feedbackText, setFeedbackText] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
-  const { state } = useUser();
 
   const onFormSubmit = (e) => {
     e.preventDefault();
-    handleSubmit({ peerName, feedbackText, file });
+    handleSubmit({ peerName, file, preview });
     clearData();
   };
 
   const clearData = () => {
     setPeerName("");
-    setFeedbackText("");
     setFile(null);
     setPreview(null);
 }
@@ -60,27 +55,13 @@ const FeedbackForm = ({ handleSubmit }) => {
             />
           </div>
 
-          {/* Feedback Text */}
-          <div>
-            <label htmlFor="feedback" className="block text-sm font-medium text-gray-900">
-              Text
-            </label>
-            <textarea
-              id="feedback"
-              name="feedback"
-              rows={4}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={feedbackText}
-              onChange={(e) => setFeedbackText(e.target.value)}
-            />
-          </div>
-
           {/* File Upload */}
           <div>
             <label htmlFor="file-upload" className="block text-sm font-medium text-gray-900">
               Screenshot of Feedback
             </label>
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-300 px-6 py-10">
+              {!file && 
               <div className="text-center">
                 <PhotoIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
                 <div className="mt-4 flex text-sm text-gray-600">
@@ -102,8 +83,19 @@ const FeedbackForm = ({ handleSubmit }) => {
                 </div>
                 <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
               </div>
-              <br/>
-              {file && <p className="text-xs text-gray-500">Selected: {file.name}</p>}
+              }
+              {file && (
+              <div className="mt-2">
+                <p className="text-xs text-gray-500">Selected: {file.name}</p>
+                {preview && (
+                  <img 
+                    src={preview} 
+                    alt="Preview" 
+                    className="mt-2 max-w-full rounded-md shadow-sm" 
+                  />
+                )}
+              </div>
+            )}
             </div>
           </div>
         </div>

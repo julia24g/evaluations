@@ -37,7 +37,7 @@ const DropDownAnswer = ({ questionKey }) => {
   };
 
   return (
-    <div className="w-full max-w-md px-4">
+    <div className="w-full max-w-xs px-4">
       <Field>
         <div className="relative">
           <Select
@@ -46,7 +46,7 @@ const DropDownAnswer = ({ questionKey }) => {
             onChange={handleAnswerChange}
             disabled={isDisabled}
             className={clsx(
-              "mt-3 block w-full appearance-none rounded-lg border border-gray-300 bg-white/5 py-1.5 px-3 text-sm text-gray-900",
+              "mt-3 block w-full appearance-none rounded-lg border border-gray-300 bg-white/5 py-1.5 pl-3 pr-10 text-sm text-gray-900",
               "focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600",
               "*:text-black",
               isDisabled && "cursor-not-allowed opacity-50 bg-gray-200"
@@ -59,7 +59,7 @@ const DropDownAnswer = ({ questionKey }) => {
             ))}
           </Select>
           <ChevronDownIcon
-            className="pointer-events-none absolute top-2.5 right-2.5 size-4 fill-gray-500"
+            className="pointer-events-none absolute top-2.5 right-2.5 h-4 w-4 fill-gray-500"
             aria-hidden="true"
           />
         </div>
