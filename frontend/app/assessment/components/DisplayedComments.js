@@ -81,7 +81,7 @@ const DisplayedComments = ({ presentationEnabled, questionKey }) => {
 
   return (
     <div>
-      {comments.length > 0 && <h3 className="text-base/7 font-semibold text-gray-900">Comments</h3>}
+      {comments.length > 0 && <h3 className="text-sm font-semibold text-gray-700">Comments</h3>}
       {comments.length > 0 && (comments.map(({ commentid, userid, commenttext }) => (
         <SingleComment
           key={commentid || `temp-${Math.random()}`}

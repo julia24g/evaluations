@@ -11,7 +11,7 @@ import ScrollIndicator from "./ScrollIndicator";
 import {
   CalendarIcon,
   CheckIcon,
-  UserIcon
+  UserCircleIcon
 } from '@heroicons/react/20/solid';
 import Feedback from "./Feedback";
 
@@ -151,17 +151,17 @@ const Assessment = () => {
   return (
     <>
       {/* ✅ Header Section */}
-      <div className="lg:flex lg:items-center lg:justify-between p-6">
+      <div className="lg:flex lg:items-center lg:justify-between p-6 shadow">
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             {state.assessmentInfo?.level || ""} Performance Assessment
           </h2>
-          <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-            <div className="mt-2 flex items-center text-sm text-gray-500">
-              <UserIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
+          <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-2 sm:gap-y-0">
+            <div className="flex items-center text-sm text-gray-500">
+              <UserCircleIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
               {state.assessmentInfo?.firstname} {state.assessmentInfo?.lastname}
             </div>
-            <div className="mt-2 flex items-center text-sm text-gray-500">
+            <div className="flex items-center text-sm text-gray-500">
               <CalendarIcon aria-hidden="true" className="mr-1.5 size-5 shrink-0 text-gray-400" />
               {state.assessmentInfo?.date || "N/A"}
             </div>
@@ -219,8 +219,8 @@ const Assessment = () => {
           <ul className="menu rounded-box">
             <li>
               <details open>
-                <summary>Questions</summary>
-                <ul>
+                <summary className="menu-dropdown-toggle">Questions</summary>
+                <ul className="menu-dropdown">
                   {categories.map((category) => (
                     <li key={category.key}>
                       <a

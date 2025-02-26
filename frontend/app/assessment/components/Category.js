@@ -9,6 +9,7 @@ const Category = ({ presentationEnabled, categoryName }) => {
 
   return (
     <div className="flex-grow-1 p-3">
+      <h2 className="text-lg font-semibold mt-6">{categoryName}</h2>
 
       <TabGroup>
         <TabList className="flex border-b border-gray-300">

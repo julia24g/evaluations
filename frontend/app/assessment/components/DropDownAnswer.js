@@ -48,7 +48,7 @@ const DropDownAnswer = ({ questionKey }) => {
             className={clsx(
               "mt-3 block w-full appearance-none rounded-lg border border-gray-300 bg-white/5 py-1.5 pl-3 pr-10 text-sm text-gray-900",
               "focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600",
-              "*:text-black",
+              "*:text-black ",
               isDisabled && "cursor-not-allowed opacity-50 bg-gray-200"
             )}
           >
