@@ -151,7 +151,7 @@ const Assessment = () => {
   return (
     <>
       {/* ✅ Header Section */}
-      <div className="lg:flex lg:items-center lg:justify-between p-6 shadow">
+      <div className="lg:flex lg:items-center lg:justify-between p-6">
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             {state.assessmentInfo?.level || ""} Performance Assessment
@@ -214,52 +214,66 @@ const Assessment = () => {
 
       {/* ✅ Main Assessment Content */}
       <div className="flex h-screen">
-        {/* Sidebar menu */}
-        <div className="w-60 bg-base-200 p-4 overflow-y-auto">
-          <ul className="menu rounded-box">
-            <li>
-              <details open>
-                <summary className="menu-dropdown-toggle">Questions</summary>
-                <ul className="menu-dropdown">
-                  {categories.map((category) => (
-                    <li key={category.key}>
-                      <a
-                        className={`block p-2 rounded ${
-                          activeTab === category.name ? "bg-primary text-white" : "hover:bg-base-300"
-                        }`}
-                        onClick={() => setActiveTab(category.name)}
-                      >
-                        {category.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </li>
-            <li key={resultsKey}>
-              <a
-                className={`block p-2 rounded ${
-                  activeTab === "Results" ? "bg-primary text-white" : "hover:bg-base-300"
-                }`}
-                onClick={() => setActiveTab("Results")}
-              >
-                Results
-              </a>
-            </li>
-            {state.assessmentInfo?.status !== "In Progress" && 
-              <li key={peerFeedbackKey}>
+          {/* Sidebar menu */}
+          <div className="w-64 bg-base-200 p-4 overflow-y-auto bg-white">
+            <ul className="menu space-y-1">
+              {/* Questions Dropdown */}
+              <li>
+                <details open>
+                  <summary className="menu-dropdown-toggle block px-3 py-2 rounded-lg font-medium transition after:content-none">
+                    Questions
+                  </summary>
+                  <ul className="menu-dropdown mt-1 ml-3 space-y-1 border-l-2 border-gray-300 pl-2">
+                    {categories.map((category) => (
+                      <li key={category.key}>
+                        <a
+                          className={`block px-3 py-2 rounded-lg transition ${
+                            activeTab === category.name
+                              ? "bg-primary text-white font-medium"
+                              : "hover:bg-base-300 text-gray-800"
+                          }`}
+                          onClick={() => setActiveTab(category.name)}
+                        >
+                          {category.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </li>
+
+              {/* Results Tab */}
+              <li key={resultsKey}>
                 <a
-                  className={`block p-2 rounded ${
-                    activeTab === "Peer Feedback" ? "bg-primary text-white" : "hover:bg-base-300"
+                  className={`block px-3 py-2 rounded-lg font-medium transition ${
+                    activeTab === "Results"
+                      ? "bg-primary text-white"
+                      : "hover:bg-base-300 text-gray-800"
                   }`}
-                  onClick={() => setActiveTab("Peer Feedback")}
+                  onClick={() => setActiveTab("Results")}
                 >
-                  Peer Feedback
+                  Results
                 </a>
               </li>
-            }
-          </ul>
-        </div>
+
+              {/* Peer Feedback Tab (Only when status is not "In Progress") */}
+              {state.assessmentInfo?.status !== "In Progress" && (
+                <li key={peerFeedbackKey}>
+                  <a
+                    className={`block px-3 py-2 rounded-lg font-medium transition ${
+                      activeTab === "Peer Feedback"
+                        ? "bg-primary text-white"
+                        : "hover:bg-base-300 text-gray-800"
+                    }`}
+                    onClick={() => setActiveTab("Peer Feedback")}
+                  >
+                    Peer Feedback
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
+
 
         {/* Right-side content */}
         <div className="flex-1 p-6 overflow-auto" ref={contentRef}>
