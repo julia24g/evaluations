@@ -12,7 +12,7 @@ const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } 
 // Peer feedback creation
 router.post("/", upload.single("file"), async (req, res) => {
     try {
-      const { assessmentId, peerName } = req.body;
+      const { assessmentId } = req.body;
   
       if (!assessmentId) {
         return res.status(400).json({ message: "Assessment ID is required" });
@@ -38,19 +38,17 @@ router.post("/", upload.single("file"), async (req, res) => {
       }
   
       const feedbackQuery = `
-        INSERT INTO peerFeedback (assessmentId, peerName, imageId)
-        VALUES ($1, $2, $3) RETURNING id;
+        INSERT INTO peerFeedback (assessmentId, imageId)
+        VALUES ($1, $2) RETURNING id;
       `;
       const feedbackResult = await pool.query(feedbackQuery, [
         assessmentId,
-        peerName || null,
         image ? image.imageid : null
       ]);
   
       res.status(201).json({
         feedbackId: feedbackResult.rows[0].id,
         assessmentId,
-        peerName,
         image
       });
     } catch (error) {
@@ -65,7 +63,7 @@ router.get('/:assessId', async (req, res) => {
     try {
         const { assessId } = req.params;
         const query = `
-            SELECT p.id AS feedbackId, p.assessmentId, p.peerName, 
+            SELECT p.id AS feedbackId, p.assessmentId, 
                    i.imageId, i.mimetype, i.data
             FROM peerFeedback p
             LEFT JOIN images i ON p.imageId = i.imageId
@@ -77,7 +75,6 @@ router.get('/:assessId', async (req, res) => {
         const feedback = result.rows.map(row => ({
             feedbackId: row.feedbackid,
             assessmentId: row.assessmentid,
-            peerName: row.peername,
             image: row.imageid ? {
                 imageId: row.imageid,
                 mimetype: row.mimetype,
@@ -94,19 +91,32 @@ router.get('/:assessId', async (req, res) => {
 
 // Delete peer feedback
 router.delete('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await pool.query('DELETE FROM peerFeedback WHERE id = $1', [id]);
+  try {
+      const { id } = req.params;
 
-        if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Feedback not found' });
-        }
+      const feedbackResult = await pool.query('SELECT imageId FROM peerFeedback WHERE id = $1', [id]);
 
-        res.json({ message: 'Feedback deleted successfully' });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+      if (feedbackResult.rows.length === 0) {
+          return res.status(404).json({ message: 'Feedback not found' });
+      }
+
+      const imageId = feedbackResult.rows[0].imageid;
+
+      const deleteFeedbackResult = await pool.query('DELETE FROM peerFeedback WHERE id = $1', [id]);
+
+      if (deleteFeedbackResult.rowCount > 0 && imageId) {
+          const imageReferenceCheck = await pool.query('SELECT COUNT(*) FROM peerFeedback WHERE imageId = $1', [imageId]);
+
+          if (parseInt(imageReferenceCheck.rows[0].count, 10) === 0) {
+              await pool.query('DELETE FROM images WHERE imageId = $1', [imageId]);
+          }
+      }
+
+      res.json({ message: 'Feedback deleted successfully' });
+  } catch (err) {
+      console.error("Error deleting feedback and image:", err);
+      res.status(500).send('Server Error');
+  }
 });
 
 

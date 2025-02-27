@@ -22,6 +22,13 @@ const Assessment = () => {
   const activeSubmitButton = state.assessmentInfo?.status !== "Complete";
   const [presentationEnabled, setPresentationEnabled] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState(null);
+
+  useEffect(() => {
+    if (categories.length > 0 && !activeTab) {
+      setActiveTab(categories[0].name);
+    }
+  }, [categories]);
 
   if (!state.assessmentInfo){
     return <LoadingOverlay />
@@ -146,12 +153,10 @@ const Assessment = () => {
   const resultsKey = categories.length;
   const peerFeedbackKey = categories.length + 1;
 
-  const [activeTab, setActiveTab] = useState(categories[0]?.name);
-
   return (
     <>
       {/* ✅ Header Section */}
-      <div className="lg:flex lg:items-center lg:justify-between p-6">
+      <div className="lg:flex lg:items-center lg:justify-between p-6 border-b border-gray-200">
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             {state.assessmentInfo?.level || ""} Performance Assessment
@@ -220,7 +225,12 @@ const Assessment = () => {
               {/* Questions Dropdown */}
               <li>
                 <details open>
-                  <summary className="menu-dropdown-toggle block px-3 py-2 rounded-lg font-medium transition after:content-none">
+                  <summary className="menu-dropdown-toggle block px-3 py-2 rounded-lg font-medium transition after:content-none"
+                  onClick={() => {
+                    if (categories.length > 0) {
+                      setActiveTab(categories[0].name);
+                    }
+                  }}>
                     Questions
                   </summary>
                   <ul className="menu-dropdown mt-1 ml-3 space-y-1 border-l-2 border-gray-300 pl-2">
@@ -276,14 +286,16 @@ const Assessment = () => {
 
 
         {/* Right-side content */}
-        <div className="flex-1 p-6 overflow-auto" ref={contentRef}>
-        {activeTab === "Results" ? (
-            <Results />
-        ) : activeTab === "Peer Feedback" ? (
-            <Feedback />
-        ) : (
-            <Category presentationEnabled={presentationEnabled} categoryName={activeTab} />
-        )}
+        <div className="flex-1 p-6 overflow-auto bg-gray-50" ref={contentRef}>
+          <div className="max-w-5xl mx-auto rounded-lg bg-white shadow-md p-6">
+            {activeTab === "Results" ? (
+                <Results />
+            ) : activeTab === "Peer Feedback" ? (
+                <Feedback />
+            ) : (
+                <Category presentationEnabled={presentationEnabled} categoryName={activeTab} />
+            )}
+          </div>
           <ScrollIndicator targetRef={contentRef} />
         </div>
       </div>

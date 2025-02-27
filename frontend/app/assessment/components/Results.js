@@ -44,7 +44,6 @@ const Results = () => {
 
   return (
     <div>
-      {loading && <LoadingOverlay />}
       <table className="table">
         <thead>
           <tr>

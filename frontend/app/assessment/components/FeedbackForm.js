@@ -3,18 +3,16 @@ import React, { useState } from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 
 const FeedbackForm = ({ handleSubmit }) => {
-  const [peerName, setPeerName] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
   const onFormSubmit = (e) => {
     e.preventDefault();
-    handleSubmit({ peerName, file, preview });
+    handleSubmit({ file, preview });
     clearData();
   };
 
   const clearData = () => {
-    setPeerName("");
     setFile(null);
     setPreview(null);
 }
@@ -40,21 +38,6 @@ const FeedbackForm = ({ handleSubmit }) => {
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Enter Feedback</h2>
       <form onSubmit={onFormSubmit}>
         <div className="space-y-6">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-900">
-              Peer Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="given-name"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              value={peerName}
-              onChange={(e) => setPeerName(e.target.value)}
-            />
-          </div>
-
           {/* File Upload */}
           <div>
             <label htmlFor="file-upload" className="block text-sm font-medium text-gray-900">

@@ -38,13 +38,12 @@ const Feedback = () => {
         }
     };
 
-    const onSubmit = async ({ peerName, file, preview }) => {
+    const onSubmit = async ({ file, preview }) => {
         const tempId = `temp-${Date.now()}`;
         const base64Data = preview ? preview.split(",")[1] : null;
         const newFeedback = {
             feedbackid: tempId,
             assessmentid: state.assessmentInfo.id,
-            peername: peerName,
             image: file
               ? { 
                   imageid: tempId,
@@ -57,7 +56,6 @@ const Feedback = () => {
         setFeedbackList((prev) => [...prev, newFeedback]);
 
         const formData = new FormData();
-        formData.append("peerName", peerName);
         formData.append("assessmentId", state.assessmentInfo.id);
         if (file) {
           formData.append("file", file);
@@ -90,9 +88,8 @@ const Feedback = () => {
                     <div key={feedback.feedbackid} className="flex-grow">
                         <FeedbackCard 
                             key={feedback.feedbackid}
-                            feedbackId={feedback.feedbackId} 
+                            feedbackId={feedback.feedbackid} 
                             imageData={feedback.image} 
-                            name={feedback.peerName} 
                             onDelete={onDelete} 
                         />
                     </div>

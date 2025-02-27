@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS images (
 CREATE TABLE IF NOT EXISTS peerFeedback (
     id SERIAL PRIMARY KEY,
     assessmentId INT NOT NULL,
-    peerName VARCHAR(100),
     imageId INT,
     CONSTRAINT fk_peerFeedback_assessment FOREIGN KEY (assessmentId) REFERENCES assessment(assessmentId) ON DELETE CASCADE,
     CONSTRAINT fk_peerFeedback_images FOREIGN KEY (imageId) REFERENCES images(imageId) ON DELETE CASCADE
