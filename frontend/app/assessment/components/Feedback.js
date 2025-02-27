@@ -24,6 +24,8 @@ const Feedback = () => {
         getFeedback();
     }, [state.assessmentInfo.id]);
 
+    console.log(feedbackList);
+
     const onDelete = async (feedbackId) => {
         const previousFeedbackList = [...feedbackList];
         setFeedbackList((prev) =>
@@ -42,11 +44,11 @@ const Feedback = () => {
         const tempId = `temp-${Date.now()}`;
         const base64Data = preview ? preview.split(",")[1] : null;
         const newFeedback = {
-            feedbackid: tempId,
-            assessmentid: state.assessmentInfo.id,
+            feedbackId: tempId,
+            assessmentId: state.assessmentInfo.id,
             image: file
               ? { 
-                  imageid: tempId,
+                  imageId: tempId,
                   mimetype: file.type,
                   data: base64Data
                 }
@@ -69,12 +71,12 @@ const Feedback = () => {
           console.log("Upload successful:", response.data);
           setFeedbackList((prev) =>
             prev.map((feedback) =>
-              feedback.feedbackid === tempId ? response.data : feedback
+              feedback.feedbackId === tempId ? response.data : feedback
             )
           );
         } catch (error) {
         setFeedbackList((prev) =>
-            prev.filter((feedback) => feedback.feedbackid !== tempId)
+            prev.filter((feedback) => feedback.feedbackId !== tempId)
             );
           console.error("Error submitting feedback:", error);
           setError(error.response?.data?.message || "An error occurred");
@@ -85,10 +87,10 @@ const Feedback = () => {
         <div className="p-4">
             <div className="flex flex-wrap gap-4 justify-start">
                 {feedbackList.map((feedback) => (
-                    <div key={feedback.feedbackid} className="flex-grow">
+                    <div key={feedback.feedbackId} className="flex-grow">
                         <FeedbackCard 
-                            key={feedback.feedbackid}
-                            feedbackId={feedback.feedbackid} 
+                            key={feedback.feedbackId}
+                            feedbackId={feedback.feedbackId} 
                             imageData={feedback.image} 
                             onDelete={onDelete} 
                         />
